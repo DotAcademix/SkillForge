@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.EntityFrameworkCore;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
-using Monkey.Data.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +9,7 @@ using System.Threading.Tasks;
 //using SkillForge.Data.Entities; -- To be added.
 using SkillForge.Data;
 
-namespace Monkey.Data.Data
+namespace SkillForge.Data
 {
     public class ApplicationDbContextDesignTimeFactory : IDesignTimeDbContextFactory<ApplicationDbContext>
     {
