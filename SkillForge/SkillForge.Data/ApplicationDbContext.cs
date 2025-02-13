@@ -1,3 +1,5 @@
+using SkillForge.Data.Enums;
+
 namespace SkillForge.Data;
 
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -13,6 +15,13 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     protected override void OnModelCreating(ModelBuilder builder)
     {
             base.OnModelCreating(builder);
+            
+            builder.Entity<ApplicationUserRole>()
+                .Property(r => r.Role)
+                .HasConversion(
+                    v => v.ToString(),  // Convert the enum to string when saving
+                    v => (Role)Enum.Parse(typeof(Role), v)  // Convert string back to enum when reading
+                );
             
             builder.Entity<Course>().ToTable("Courses", "dbo");
             builder.Entity<Module>().ToTable("Modules", "dbo");
