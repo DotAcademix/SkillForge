@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Identity;
 using SkillForge.Data.Enums;
 
 namespace SkillForge.Data;
@@ -14,31 +15,36 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
-            base.OnModelCreating(builder);
-            
-            builder.Entity<ApplicationUserRole>()
-                .Property(r => r.Role)
-                .HasConversion(
-                    v => v.ToString(),  // Convert the enum to string when saving
-                    v => (Role)Enum.Parse(typeof(Role), v)  // Convert string back to enum when reading
-                );
-            
-            builder.Entity<Course>().ToTable("Courses", "dbo");
-            builder.Entity<Module>().ToTable("Modules", "dbo");
-            
-            builder.Entity<ApplicationUser>()
-                .HasMany(u => u.EnrolledCourses)
-                .WithMany(c => c.EnrolledUsers)
-                .UsingEntity(j => j.ToTable("UserEnrolledCourses"));
-            
-            builder.Entity<ApplicationUser>()
-                .HasMany(u => u.ManagedCourses)
-                .WithMany(c => c.ManagerUsers)
-                .UsingEntity(j => j.ToTable("UserManagedCourses"));
-            
-            builder.Entity<Module>()
-                .HasOne(m => m.Course)    // Each Module has one Course
-                .WithMany(c => c.Modules) // Each Course has many Modules
-                .OnDelete(DeleteBehavior.Cascade); // Optional: Cascade delete if course is deleted
+        base.OnModelCreating(builder);
+
+        var roles = new List<(string, string)> { ("Student", "0"), ("Instructor", "1"), ("Admin", "2") };
+
+        foreach (var (roleName, roleId) in roles)
+        {
+            builder.Entity<IdentityRole>().HasData(new IdentityRole<string>
+            {
+                Id = roleId, 
+                Name = roleName,
+                NormalizedName = roleName.ToUpper()
+            });
+        }
+
+        builder.Entity<Course>().ToTable("Courses", "dbo");
+        builder.Entity<Module>().ToTable("Modules", "dbo");
+
+        builder.Entity<ApplicationUser>()
+            .HasMany(u => u.EnrolledCourses)
+            .WithMany(c => c.EnrolledUsers)
+            .UsingEntity(j => j.ToTable("UserEnrolledCourses"));
+
+        builder.Entity<ApplicationUser>()
+            .HasMany(u => u.ManagedCourses)
+            .WithMany(c => c.ManagerUsers)
+            .UsingEntity(j => j.ToTable("UserManagedCourses"));
+
+        builder.Entity<Module>()
+            .HasOne(m => m.Course)
+            .WithMany(c => c.Modules)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

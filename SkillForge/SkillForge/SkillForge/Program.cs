@@ -39,9 +39,10 @@ namespace SkillForge
                 options.UseSqlServer(connectionString));
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
             
-            builder.Services.AddIdentity<ApplicationUser, IdentityRole<Guid>>(options => options.SignIn.RequireConfirmedAccount = true)
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole<string>>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>()
-                .AddRoleManager<RoleManager<ApplicationUserRole>>()
+                .AddRoleManager<RoleManager<IdentityRole<string>>>()
+                .AddUserManager<UserManager<ApplicationUser>>()
                 .AddSignInManager()
                 .AddDefaultTokenProviders();
             

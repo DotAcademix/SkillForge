@@ -1,8 +1,8 @@
 ﻿namespace SkillForge.Data.Enums;
 
-public enum Role
+public static class Role // This isn't really an enum but it's the best way to do this
 {
-    Student,
-    Instructor,
-    Admin
+    public const string Student = "Student";
+    public const string Instructor = "Instructor";
+    public const string Admin = "Admin";
 }

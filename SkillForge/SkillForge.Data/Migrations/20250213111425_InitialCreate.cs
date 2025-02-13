@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace SkillForge.Data.Migrations
 {
     /// <inheritdoc />
@@ -244,6 +246,16 @@ namespace SkillForge.Data.Migrations
                         principalTable: "Courses",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.InsertData(
+                table: "AspNetRoles",
+                columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
+                values: new object[,]
+                {
+                    { "0", null, "Student", "STUDENT" },
+                    { "1", null, "Instructor", "INSTRUCTOR" },
+                    { "2", null, "Admin", "ADMIN" }
                 });
 
             migrationBuilder.CreateIndex(
