@@ -21,7 +21,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 
         foreach (var (roleName, roleId) in roles)
         {
-            builder.Entity<IdentityRole>().HasData(new IdentityRole<string>
+            builder.Entity<IdentityRole>().HasData(new IdentityRole
             {
                 Id = roleId, 
                 Name = roleName,
