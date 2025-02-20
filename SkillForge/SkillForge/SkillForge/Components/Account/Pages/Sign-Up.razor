@@ -4,6 +4,10 @@
     body {
         background: linear-gradient(to right, #3da4dc, var(--mainColor));
     }
+
+    .@sidebarClass {
+        display: none;
+    }
 </style>
 
 @using System.ComponentModel.DataAnnotations
@@ -147,6 +151,7 @@
 
 @code {
     private IEnumerable<IdentityError>? identityErrors;
+    private string sidebarClass = "open"; // Default to open
 
     [SupplyParameterFromForm]
     private InputModel Input { get; set; } = new();

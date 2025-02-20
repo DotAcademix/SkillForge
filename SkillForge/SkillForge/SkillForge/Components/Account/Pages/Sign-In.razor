@@ -4,6 +4,10 @@
     body {
         background: linear-gradient(to right, #3da4dc, var(--mainColor));
     }
+
+    .@sidebarClass {
+        display: none;
+    }
 </style>
 
 @using System.ComponentModel.DataAnnotations
@@ -55,6 +59,7 @@
 
 @code {
     private string? errorMessage;
+    private string sidebarClass = "open"; // Default to open
 
     [CascadingParameter]
     private HttpContext HttpContext { get; set; } = default!;
