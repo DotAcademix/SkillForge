@@ -1,4 +1,4 @@
-﻿@page "/Sign-Up"
+﻿@page "/Account/Register"
 
 <style>
     body {
@@ -33,8 +33,8 @@
             <DataAnnotationsValidator />
             <h2>Sign Up</h2>
 
-            @* <div class="form-group">
-                <InputText @bind-Value="Input.UserName" 
+             <div class="form-group">
+                <InputText @bind-Value="Input.FirstName" 
                 style="width: 104%;
                 height: 2.75rem;
                 padding: 0 1rem;
@@ -44,10 +44,25 @@
                 border: .1rem solid var(--labelColor);
                 font-size: 1.3rem;
                 color: var(--labelColor);
-                background: transparent;" class="form-control" autocomplete="username" aria-required="true" placeholder="Username" />
+                background: transparent;" class="form-control" autocomplete="FirstName" aria-required="true" placeholder="FirstName" />
                 <i class="fas fa-user"></i>
-                <ValidationMessage For="@(() => Input.UserName)" class="text-danger" />
-            </div> *@
+                <ValidationMessage For="@(() => Input.FirstName)" class="text-danger" />
+            </div>
+            <div class="form-group">
+                <InputText @bind-Value="Input.LastName"
+                           style="width: 104%;
+                height: 2.75rem;
+                padding: 0 1rem;
+                border-radius: .5rem;
+                border: none;
+                outline: none;
+                border: .1rem solid var(--labelColor);
+                font-size: 1.3rem;
+                color: var(--labelColor);
+                background: transparent;" class="form-control" autocomplete="LastName" aria-required="true" placeholder="LastName" />
+                <i class="fas fa-user"></i>
+                <ValidationMessage For="@(() => Input.LastName)" class="text-danger" />
+            </div>
 
             <div class="form-group">
                 <InputText @bind-Value="Input.Email" style="width: 104%;
@@ -93,11 +108,28 @@
                 <i class="fas fa-lock"></i>
                 <ValidationMessage For="@(() => Input.ConfirmPassword)" class="text-danger" />
             </div>
+            <div class="form-group">
+                <InputSelect @bind-Value="Input.Role" id="Input.Role" style="width: 104%;
+                height: 2.75rem;
+                padding: 0 1rem;
+                border-radius: .5rem;
+                border: none;
+                outline: none;
+                border: .1rem solid var(--labelColor);
+                font-size: 1.3rem;
+                color: var(--labelColor);
+                background: transparent;" class="form-control" autocomplete="role aria-required="true" placeholder="Role" >
+                    <option value="Student">Student</option>
+                    <option value="Instructor">Instructor</option>
+                </InputSelect>
+                <i class="fas fa-lock"></i>
+                <ValidationMessage For="() => Input.Role" class="text-danger" />
+            </div>
 
             <button type="submit" class="btn">Sign Up</button>
 
             <div class="link">
-                <p>Already have an account? <a href="/Sign-In" class="signin-link">Sign In</a></p>
+                <p>Already have an account? <a href="/Account/Login" class="signin-link">Sign In</a></p>
             </div>
 
             @if (identityErrors is not null && identityErrors.Any())
@@ -128,6 +160,10 @@
     {
         var user = CreateUser();
 
+        user.FirstName = Input.FirstName;
+        user.LastName = Input.LastName;
+        //user.Role = string.IsNullOrWhiteSpace(Input.Role) ? "Student" : Input.Role; // Force default
+
         await UserStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
         var emailStore = GetEmailStore();
         await emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
@@ -138,10 +174,12 @@
             identityErrors = result.Errors;
             return;
         }
+        await UserManager.AddToRoleAsync(user, Input.Role);
 
         Logger.LogInformation("User created a new account with password.");
 
         var userId = await UserManager.GetUserIdAsync(user);
+
         var code = await UserManager.GenerateEmailConfirmationTokenAsync(user);
         code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
         var callbackUrl = NavigationManager.GetUriWithQueryParameters(
@@ -165,7 +203,7 @@
     {
         try
         {
-            return Activator.CreateInstance<ApplicationUser>();
+            return new ApplicationUser();
         }
         catch
         {
@@ -186,6 +224,14 @@
     private sealed class InputModel
     {
         [Required]
+        [Display(Name = "First Name")]
+        public string FirstName { get; set; } = "";
+
+        [Required]
+        [Display(Name = "Last Name")]
+        public string LastName { get; set; } = "";
+
+        [Required]
         [EmailAddress]
         [Display(Name = "Email")]
         public string Email { get; set; } = "";
@@ -200,5 +246,9 @@
         [Display(Name = "Confirm password")]
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; } = "";
+
+        [Display(Name = "Role")]
+        public string Role { get; set; } = "Choose role"; // Default to Student
     }
+
 }

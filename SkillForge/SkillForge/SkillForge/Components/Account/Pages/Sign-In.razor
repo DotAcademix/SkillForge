@@ -1,4 +1,4 @@
-﻿@page "/Sign-In"
+﻿@page "/Account/Login"
 
 <style>
     body {
@@ -29,7 +29,7 @@
             <DataAnnotationsValidator />
             <h2>Login</h2>
             <div class="form-group">
-                <InputText @bind-Value="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="Username" />
+                <InputText @bind-Value="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="Email" />
                 <i class="fas fa-user"></i>
                 <ValidationMessage For="@(() => Input.Email)" class="text-danger" />
             </div>
@@ -43,7 +43,7 @@
             </div>
             <button type="submit" class="btn">Login</button>
             <div class="link">
-                <p>Don't have an account? <a href="Sign-Up" class="signup-link">Sign up</a></p>
+                <p>Don't have an account? <a href="/Account/Register" class="signup-link">Sign up</a></p>
             </div>
             @if (!string.IsNullOrEmpty(errorMessage))
             {
