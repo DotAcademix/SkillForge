@@ -1,0 +1,1 @@
+﻿always delete ApplicationDbContextModelSnapshot.cs when making a new migration

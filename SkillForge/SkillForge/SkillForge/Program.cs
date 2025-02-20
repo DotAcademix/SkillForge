@@ -5,6 +5,8 @@ using SkillForge.Client.Pages;
 using SkillForge.Components;
 using SkillForge.Components.Account;
 using SkillForge.Data;
+using SkillForge.Data.Entities;
+using SkillForge.Data.Enums;
 
 namespace SkillForge
 {
@@ -25,27 +27,22 @@ namespace SkillForge
             builder.Services.AddScoped<IdentityRedirectManager>();
             builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
 
-            builder.Services.AddAuthentication(options =>
-                {
-                    options.DefaultScheme = IdentityConstants.ApplicationScheme;
-                    options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
-                })
-                .AddIdentityCookies();
-
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionString));
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
-
-            builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+            
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddRoleManager<RoleManager<IdentityRole>>()
+                .AddUserManager<UserManager<ApplicationUser>>()
                 .AddSignInManager()
                 .AddDefaultTokenProviders();
-
+            
             builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 
             var app = builder.Build();
-
+            
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
