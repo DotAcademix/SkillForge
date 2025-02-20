@@ -28,7 +28,9 @@ br {
 a, .btn-link {
     color: #006bb7;
 }
-
+main {
+    grid-area: main;
+}
 .btn-primary {
     color: #fff;
     background-color: #1b6ec2;

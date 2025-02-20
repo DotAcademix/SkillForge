@@ -101,3 +101,11 @@ main {
         right: 0.75rem;
         top: 0.5rem;
     }
+
+body {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-areas:
+        "sidebar main"
+        "sidebar footer";
+}
