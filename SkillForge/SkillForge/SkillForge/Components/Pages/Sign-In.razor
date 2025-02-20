@@ -1,0 +1,101 @@
+﻿@page "/Sign-In"
+
+<style>
+    body {
+        background: linear-gradient(to right, #3da4dc, var(--mainColor));
+    }
+</style>
+
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.Components.Forms
+@using SkillForge.Components.Account
+@using SkillForge.Data
+
+@inject SignInManager<ApplicationUser> SignInManager
+@inject ILogger<Sign_In> Logger
+@inject NavigationManager NavigationManager
+@inject IdentityRedirectManager RedirectManager
+@inject IHttpContextAccessor HttpContextAccessor
+
+<PageTitle>Sign-In</PageTitle>
+
+<div class="wrapper">
+    <div class="form-container sign-up">
+    </div>
+    <div class="form-container">
+        <EditForm Model="Input" method="post" OnValidSubmit="LoginUser" FormName="login">
+            <DataAnnotationsValidator />
+            <h2>Login</h2>
+            <div class="form-group">
+                <InputText @bind-Value="Input.UserName" class="form-control" autocomplete="username" aria-required="true" placeholder="Username" />
+                <i class="fas fa-user"></i>
+                <ValidationMessage For="@(() => Input.UserName)" class="text-danger" />
+            </div>
+            <div class="form-group">
+                <InputText type="password" @bind-Value="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="Password" />
+                <i class="fas fa-lock"></i>
+                <ValidationMessage For="@(() => Input.Password)" class="text-danger" />
+            </div>
+            <div class="forgot-pass">
+                <a href="Account/ForgotPassword">Forgot password?</a>
+            </div>
+            <button type="submit" class="btn">Login</button>
+            <div class="link">
+                <p>Don't have an account? <a href="Sign-Up" class="signup-link">Sign up</a></p>
+            </div>
+            @if (!string.IsNullOrEmpty(errorMessage))
+            {
+                <p class="text-danger">@errorMessage</p>
+            }
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    private string? errorMessage;
+
+    private InputModel Input { get; set; } = new();
+
+    [SupplyParameterFromQuery]
+    private string? ReturnUrl { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await HttpContextAccessor.HttpContext?.SignOutAsync(IdentityConstants.ExternalScheme);
+    }
+
+    private async Task LoginUser()
+    {
+        var result = await SignInManager.PasswordSignInAsync(Input.UserName, Input.Password, false, false);
+        if (result.Succeeded)
+        {
+            Logger.LogInformation("User logged in.");
+            RedirectManager.RedirectTo(ReturnUrl ?? "/");
+        }
+        else if (result.RequiresTwoFactor)
+        {
+            RedirectManager.RedirectTo("Account/LoginWith2fa");
+        }
+        else if (result.IsLockedOut)
+        {
+            Logger.LogWarning("User account locked out.");
+            RedirectManager.RedirectTo("Account/Lockout");
+        }
+        else
+        {
+            errorMessage = "Error: Invalid login attempt.";
+        }
+    }
+
+    private class InputModel
+    {
+        [Required(ErrorMessage = "Username is required")]
+        public string UserName { get; set; } = "";
+
+        [Required(ErrorMessage = "Password is required")]
+        [DataType(DataType.Password)]
+        public string Password { get; set; } = "";
+    }
+}
