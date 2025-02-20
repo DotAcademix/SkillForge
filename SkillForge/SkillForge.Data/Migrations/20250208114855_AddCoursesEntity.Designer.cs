@@ -3,17 +3,20 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SkillForge.Data;
 
 #nullable disable
 
-namespace SkillForge.Data.Migrations
+namespace SkillForge.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250208114855_AddCoursesEntity")]
+    partial class AddCoursesEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,36 +24,6 @@ namespace SkillForge.Data.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("ApplicationUserCourse", b =>
-                {
-                    b.Property<string>("EnrolledCoursesId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("EnrolledUsersId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("EnrolledCoursesId", "EnrolledUsersId");
-
-                    b.HasIndex("EnrolledUsersId");
-
-                    b.ToTable("UserEnrolledCourses", (string)null);
-                });
-
-            modelBuilder.Entity("ApplicationUserCourse1", b =>
-                {
-                    b.Property<string>("ManagedCoursesId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("ManagerUsersId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("ManagedCoursesId", "ManagerUsersId");
-
-                    b.HasIndex("ManagerUsersId");
-
-                    b.ToTable("UserManagedCourses", (string)null);
-                });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
@@ -77,26 +50,6 @@ namespace SkillForge.Data.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = "0",
-                            Name = "Student",
-                            NormalizedName = "STUDENT"
-                        },
-                        new
-                        {
-                            Id = "1",
-                            Name = "Instructor",
-                            NormalizedName = "INSTRUCTOR"
-                        },
-                        new
-                        {
-                            Id = "2",
-                            Name = "Admin",
-                            NormalizedName = "ADMIN"
-                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -224,14 +177,6 @@ namespace SkillForge.Data.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
 
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
 
@@ -278,80 +223,29 @@ namespace SkillForge.Data.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("SkillForge.Data.Entities.Course", b =>
+            modelBuilder.Entity("SkillForge.Data.Entities.Courses", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("Teacher")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Courses", "dbo");
-                });
-
-            modelBuilder.Entity("SkillForge.Data.Entities.Module", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CourseId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("VideoUrl")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CourseId");
-
-                    b.ToTable("Modules", "dbo");
-                });
-
-            modelBuilder.Entity("ApplicationUserCourse", b =>
-                {
-                    b.HasOne("SkillForge.Data.Entities.Course", null)
-                        .WithMany()
-                        .HasForeignKey("EnrolledCoursesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("SkillForge.Data.ApplicationUser", null)
-                        .WithMany()
-                        .HasForeignKey("EnrolledUsersId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("ApplicationUserCourse1", b =>
-                {
-                    b.HasOne("SkillForge.Data.Entities.Course", null)
-                        .WithMany()
-                        .HasForeignKey("ManagedCoursesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("SkillForge.Data.ApplicationUser", null)
-                        .WithMany()
-                        .HasForeignKey("ManagerUsersId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.ToTable("Courses");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -403,22 +297,6 @@ namespace SkillForge.Data.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("SkillForge.Data.Entities.Module", b =>
-                {
-                    b.HasOne("SkillForge.Data.Entities.Course", "Course")
-                        .WithMany("Modules")
-                        .HasForeignKey("CourseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Course");
-                });
-
-            modelBuilder.Entity("SkillForge.Data.Entities.Course", b =>
-                {
-                    b.Navigation("Modules");
                 });
 #pragma warning restore 612, 618
         }

@@ -1,0 +1,204 @@
+﻿@page "/Sign-Up"
+
+<style>
+    body {
+        background: linear-gradient(to right, #3da4dc, var(--mainColor));
+    }
+</style>
+
+@using System.ComponentModel.DataAnnotations
+@using System.Text
+@using System.Text.Encodings.Web
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.WebUtilities
+@using Microsoft.AspNetCore.Components.Forms
+@using SkillForge.Components.Account
+@using SkillForge.Data
+
+@inject UserManager<ApplicationUser> UserManager
+@inject IUserStore<ApplicationUser> UserStore
+@inject SignInManager<ApplicationUser> SignInManager
+@inject IEmailSender<ApplicationUser> EmailSender
+@inject ILogger<Sign_Up> Logger
+@inject NavigationManager NavigationManager
+@inject IdentityRedirectManager RedirectManager
+
+<PageTitle>Sign-Up</PageTitle>
+
+<div class="wrapper">
+    <div class="form-container sign-up">
+    </div>
+    <div class="form-container">
+        <EditForm Model="Input" asp-route-returnUrl="@ReturnUrl" method="post" OnValidSubmit="RegisterUser" FormName="register">
+            <DataAnnotationsValidator />
+            <h2>Sign Up</h2>
+
+            @* <div class="form-group">
+                <InputText @bind-Value="Input.UserName" 
+                style="width: 104%;
+                height: 2.75rem;
+                padding: 0 1rem;
+                border-radius: .5rem;
+                border: none;
+                outline: none;
+                border: .1rem solid var(--labelColor);
+                font-size: 1.3rem;
+                color: var(--labelColor);
+                background: transparent;" class="form-control" autocomplete="username" aria-required="true" placeholder="Username" />
+                <i class="fas fa-user"></i>
+                <ValidationMessage For="@(() => Input.UserName)" class="text-danger" />
+            </div> *@
+
+            <div class="form-group">
+                <InputText @bind-Value="Input.Email" style="width: 104%;
+                height: 2.75rem;
+                padding: 0 1rem;
+                border-radius: .5rem;
+                border: none;
+                outline: none;
+                border: .1rem solid var(--labelColor);
+                font-size: 1.3rem;
+                color: var(--labelColor);
+                background: transparent;" class="form-control" autocomplete="email" aria-required="true" placeholder="Email" />
+                <i class="fas fa-at"></i>
+                <ValidationMessage For="@(() => Input.Email)" class="text-danger" />
+            </div>
+
+            <div class="form-group">
+                <InputText type="password" @bind-Value="Input.Password" style="width: 104%;
+                height: 2.75rem;
+                padding: 0 1rem;
+                border-radius: .5rem;
+                border: none;
+                outline: none;
+                border: .1rem solid var(--labelColor);
+                font-size: 1.3rem;
+                color: var(--labelColor);
+                background: transparent;" class="form-control" autocomplete="new-password" aria-required="true" placeholder="Password" />
+                <i class="fas fa-lock"></i>
+                <ValidationMessage For="@(() => Input.Password)" class="text-danger" />
+            </div>
+
+            <div class="form-group">
+                <InputText type="password" @bind-Value="Input.ConfirmPassword" style="width: 104%;
+                height: 2.75rem;
+                padding: 0 1rem;
+                border-radius: .5rem;
+                border: none;
+                outline: none;
+                border: .1rem solid var(--labelColor);
+                font-size: 1.3rem;
+                color: var(--labelColor);
+                background: transparent;" class="form-control" autocomplete="new-password" aria-required="true" placeholder="Confirm Password" />
+                <i class="fas fa-lock"></i>
+                <ValidationMessage For="@(() => Input.ConfirmPassword)" class="text-danger" />
+            </div>
+
+            <button type="submit" class="btn">Sign Up</button>
+
+            <div class="link">
+                <p>Already have an account? <a href="/Sign-In" class="signin-link">Sign In</a></p>
+            </div>
+
+            @if (identityErrors is not null && identityErrors.Any())
+            {
+                <div class="text-danger">
+                    @foreach (var error in identityErrors)
+                    {
+                        <p>@error.Description</p>
+                    }
+                </div>
+            }
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    private IEnumerable<IdentityError>? identityErrors;
+
+    [SupplyParameterFromForm]
+    private InputModel Input { get; set; } = new();
+
+    [SupplyParameterFromQuery]
+    private string? ReturnUrl { get; set; }
+
+    private string? Message => identityErrors is null ? null : $"Error: {string.Join(", ", identityErrors.Select(error => error.Description))}";
+
+    public async Task RegisterUser(EditContext editContext)
+    {
+        var user = CreateUser();
+
+        await UserStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
+        var emailStore = GetEmailStore();
+        await emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
+        var result = await UserManager.CreateAsync(user, Input.Password);
+
+        if (!result.Succeeded)
+        {
+            identityErrors = result.Errors;
+            return;
+        }
+
+        Logger.LogInformation("User created a new account with password.");
+
+        var userId = await UserManager.GetUserIdAsync(user);
+        var code = await UserManager.GenerateEmailConfirmationTokenAsync(user);
+        code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+        var callbackUrl = NavigationManager.GetUriWithQueryParameters(
+            NavigationManager.ToAbsoluteUri("Account/ConfirmEmail").AbsoluteUri,
+            new Dictionary<string, object?> { ["userId"] = userId, ["code"] = code, ["returnUrl"] = ReturnUrl });
+
+        await EmailSender.SendConfirmationLinkAsync(user, Input.Email, HtmlEncoder.Default.Encode(callbackUrl));
+
+        if (UserManager.Options.SignIn.RequireConfirmedAccount)
+        {
+            RedirectManager.RedirectTo(
+                "Account/RegisterConfirmation",
+                new() { ["email"] = Input.Email, ["returnUrl"] = ReturnUrl });
+        }
+
+        await SignInManager.SignInAsync(user, isPersistent: false);
+        RedirectManager.RedirectTo(ReturnUrl);
+    }
+
+    private ApplicationUser CreateUser()
+    {
+        try
+        {
+            return Activator.CreateInstance<ApplicationUser>();
+        }
+        catch
+        {
+            throw new InvalidOperationException($"Can't create an instance of '{nameof(ApplicationUser)}'. " +
+                $"Ensure that '{nameof(ApplicationUser)}' is not an abstract class and has a parameterless constructor.");
+        }
+    }
+
+    private IUserEmailStore<ApplicationUser> GetEmailStore()
+    {
+        if (!UserManager.SupportsUserEmail)
+        {
+            throw new NotSupportedException("The default UI requires a user store with email support.");
+        }
+        return (IUserEmailStore<ApplicationUser>)UserStore;
+    }
+
+    private sealed class InputModel
+    {
+        [Required]
+        [EmailAddress]
+        [Display(Name = "Email")]
+        public string Email { get; set; } = "";
+
+        [Required]
+        [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
+        [DataType(DataType.Password)]
+        [Display(Name = "Password")]
+        public string Password { get; set; } = "";
+
+        [DataType(DataType.Password)]
+        [Display(Name = "Confirm password")]
+        [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+        public string ConfirmPassword { get; set; } = "";
+    }
+}

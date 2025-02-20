@@ -8,8 +8,13 @@ main {
     flex: 1;
 }
 
+:root {
+    --mainColor: #125492;
+    --whiteColor: #ffffff;
+}
+
 .sidebar {
-    background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
+    background-image: var(--whiteColor);
 }
 
 .top-row {
@@ -96,3 +101,11 @@ main {
         right: 0.75rem;
         top: 0.5rem;
     }
+
+body {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-areas:
+        "sidebar main"
+        "sidebar footer";
+}
