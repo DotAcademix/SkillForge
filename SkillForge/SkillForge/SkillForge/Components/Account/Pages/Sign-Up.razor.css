@@ -46,7 +46,7 @@ html {
     align-items: center;
     justify-content: center;
     width: 75%;
-    height: 75%;
+    height: 85%;
     background-color: var(--whiteColor);
     border-radius: .5rem;
     box-shadow: 0 0 1rem 0 rgba(0 0 0 / .2);
