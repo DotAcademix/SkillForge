@@ -1,11 +1,17 @@
 ﻿@page "/Account"
 @inject NavigationManager Navigation
 <style>
+    .section .menu {
+        width: 60%;
+        justify-content: flex-end;
+    }
+
     .prf-link {
         background: transparent;
         border: none;
         color: black;
         padding: 8px 15px;
+        text-decoration: none;
         transition: background 0.3s ease, color 0.3s ease;
         width: 100%;
     }
@@ -29,7 +35,7 @@
                 <NavLink class="prf-link" href="/Account">
                     <span class="bi bi-house-door-fill" aria-hidden="true"></span> Profile
                 </NavLink>
-                <NavLink class="prf-brand" href="Account/MyCourses">
+                <NavLink class="prf-link" href="Account/MyCourses">
                     <span class="bi bi-house-door-fill" aria-hidden="true"></span> My Courses
                 </NavLink>
             </section>
