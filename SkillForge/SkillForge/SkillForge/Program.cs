@@ -7,6 +7,8 @@ using SkillForge.Components.Account;
 using SkillForge.Data;
 using SkillForge.Data.Entities;
 using SkillForge.Data.Enums;
+using SkillForge.Data.Repositories;
+using SkillForge.Data.Repositories.Abstraction;
 
 namespace SkillForge
 {
@@ -26,6 +28,7 @@ namespace SkillForge
             builder.Services.AddScoped<IdentityUserAccessor>();
             builder.Services.AddScoped<IdentityRedirectManager>();
             builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
+            
 
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -40,6 +43,9 @@ namespace SkillForge
                 .AddDefaultTokenProviders();
             
             builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
+
+            //add dependencies
+            builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
             var app = builder.Build();
             
