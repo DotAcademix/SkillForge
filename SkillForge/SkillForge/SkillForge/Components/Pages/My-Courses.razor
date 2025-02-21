@@ -1,0 +1,54 @@
+﻿@page "/Account"
+@inject NavigationManager Navigation
+<style>
+    .prf-link {
+        background: transparent;
+        border: none;
+        color: black;
+        padding: 8px 15px;
+        transition: background 0.3s ease, color 0.3s ease;
+        width: 100%;
+    }
+
+        .prf-link:hover,
+        .prf-link:focus {
+            background: linear-gradient(to right, #3da4dc, var(--mainColor));
+            color: white;
+            border-radius: 0.5rem;
+        }
+
+        .prf-link::after {
+            border: none;
+        }
+</style>
+<main>
+    <h2>My Profile</h2>
+    <div class="row">
+        <div class="col-lg-6">
+            <section>
+                <NavLink class="prf-link" href="/Account">
+                    <span class="bi bi-house-door-fill" aria-hidden="true"></span> Profile
+                </NavLink>
+                <NavLink class="prf-brand" href="Account/MyCourses">
+                    <span class="bi bi-house-door-fill" aria-hidden="true"></span> My Courses
+                </NavLink>
+            </section>
+        </div>
+
+        <div class="col-lg-6">
+            <section>
+                <h3>My Courses</h3>
+                @SelectedContent
+            </section>
+        </div>
+    </div>
+</main>
+
+@code {
+    private RenderFragment SelectedContent => builder =>
+    {
+        builder.OpenElement(0, "p");
+        builder.AddContent(1, "This is placeholder text.");
+        builder.CloseElement();
+    };
+}
