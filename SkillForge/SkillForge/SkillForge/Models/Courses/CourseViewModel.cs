@@ -3,7 +3,7 @@ using SkillForge.Data.Entities;
 
 namespace SkillForge.Models.Courses;
 
-public class CoursesViewModel
+public class CourseViewModel
 {
 
     public  string Name { get; set; } = "";

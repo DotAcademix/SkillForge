@@ -1,85 +1,51 @@
 ﻿@page "/course/{courseId}/edit"
 @using SkillForge.Core.Services.Abstraction
 @using SkillForge.Models.Courses
+@using AutoMapper
+@using SkillForge.Core.Prototypes
+@using System.ComponentModel.DataAnnotations
 
 @rendermode RenderMode.InteractiveServer
 
 @inject ICourseService courseService
 @inject NavigationManager NavManager
+@inject IMapper mapper
 
-<MudGrid Justify="Justify.Center">
-    <MudItem xs="12" sm="7">
-        <MudPaper Class="pa-4">
-            <MudForm @ref="form" Model="course" OnValidSubmit="UpdateCourse">
-                <MudText Typo="Typo.h5" Class="mb-4">Edit Course</MudText>
+<EditForm Model="@model" OnValidSubmit="UpdateCourse">
+    <DataAnnotationsValidator/>
+    <MudGrid>
+        <MudItem xs="12" sm="7">
+            <MudCard>
+                <MudCardContent>
+                    <MudTextField Label="Name" HelperText="Name"
+                                  @bind-Value="model.Name" For="@(() => model.Name)"/>
+                    <MudTextField Label="Description" Class="mt-3"
+                                  @bind-Value="model.Description" For="@(() => model.Description)"/>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Save changes</MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+</EditForm>
 
-                <MudTextField T="string" Label="Name"
-                HelperText="Enter course name"
-                InputType="InputType.Text"
-                @bind-Value="course.Name"
-                Required="true" />
-
-                <MudTextField T="string" Label="Description"
-                HelperText="Enter course description"
-                InputType="InputType.Text"
-                @bind-Value="course.Description"
-                Required="true" />
-
-                <div class="d-flex justify-end mt-4">
-                    <MudButton Variant="Variant.Filled"
-                    Color="Color.Primary"
-                    Disabled="@(!success)"
-                    Type="submit">
-                        Save Changes
-                    </MudButton>
-
-                    <MudButton Variant="Variant.Outlined"
-                    Color="Color.Secondary"
-                    Class="ml-2"
-                    @onclick="GoBack">
-                        Cancel
-                    </MudButton>
-                </div>
-
-                @if (!string.IsNullOrEmpty(message))
-                {
-                    <MudAlert Severity="MudBlazor.Severity.Info" Class="mt-3">
-                        @message
-                    </MudAlert>
-                }
-            </MudForm>
-        </MudPaper>
-    </MudItem>
-</MudGrid>
 
 @code {
     [Parameter] public string? courseId { get; set; }
 
-    private CourseViewModel course = new();
-    private MudForm form;
-    private bool success = true;
-    private string message = "";
+    private CourseViewModel model = new();
 
     protected override async Task OnInitializedAsync()
     {
-        if (string.IsNullOrEmpty(courseId))
-        {
-            message = "Invalid Course ID.";
-            return;
-        }
-
         try
         {
             var courseEntity = await courseService.GetByIdAsync(courseId, new CancellationToken());
-            course = new CoursesViewModel
-                {
-                    Name = courseEntity.Name,
-                    Description = courseEntity.Description
-                };
+            model = mapper.Map<CourseViewModel>(courseEntity);
         }
         catch (Exception ex)
         {
-            message = $"Error loading course: {ex.Message}";
+            throw ex;
         }
     }
 
@@ -87,19 +53,15 @@
     {
         try
         {
-            var updatedCourse = new CourseViewModel
-                {
-                    Id = course.Id,
-                    Name = course.Name,
-                    Description = course.Description
-                };
+            var updatedCourse = mapper.Map<CoursePrototype>(model);
+            Console.WriteLine("test");
+            await courseService.UpdateAsync(courseId, updatedCourse, default);
 
-            await courseService.UpdateAsync(courseId, updatedCourse);
-            message = "Course updated successfully!";
+            GoBack();
         }
         catch (Exception ex)
         {
-            message = $"Error updating course: {ex.Message}";
+            throw ex;
         }
     }
 
@@ -107,4 +69,5 @@
     {
         NavManager.NavigateTo($"/course/{courseId}");
     }
+
 }

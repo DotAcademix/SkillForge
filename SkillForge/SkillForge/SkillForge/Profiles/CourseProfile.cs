@@ -9,8 +9,9 @@ public class CourseProfile : Profile
 {
     public CourseProfile()
     {
-        this.CreateMap<CoursesViewModel, Course>();
-        this.CreateMap<Course, CoursesViewModel>();
+        this.CreateMap<CourseViewModel, Course>();
+        this.CreateMap<CourseViewModel, CoursePrototype>();
+        this.CreateMap<Course, CourseViewModel>();
         this.CreateMap<Course, CoursePrototype>();
         this.CreateMap<SkillForge.Data.Entities.Course, SkillForge.Components.Pages.Courses.Course>();
     }

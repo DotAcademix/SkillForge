@@ -127,7 +127,7 @@ else
 
 @code {
     [Parameter] public string? courseId { get; set; }
-    private CoursesViewModel? course; // This is your view model (SkillForge.Components.Pages.Course)
+    private CourseViewModel? course; // This is your view model (SkillForge.Components.Pages.Course)
     private bool isLoading = true;
     private List<string> userRole = [];
 
@@ -157,7 +157,7 @@ else
         {
             var courseEntity = await courseService.GetByIdAsync(courseId, cancellationToken);
 
-            course = mapper.Map<CoursesViewModel>(courseEntity);
+            course = mapper.Map<CourseViewModel>(courseEntity);
 
             if (course == null)
             {
