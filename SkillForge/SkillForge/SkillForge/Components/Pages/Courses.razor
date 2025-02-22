@@ -2,6 +2,7 @@
 
 @using SkillForge.Core.Services.Abstraction
 @using SkillForge.Data.Entities
+@using SkillForge.Models.Courses
 
 @inject ICourseService courseService
 @inject NavigationManager NavManager
@@ -36,7 +37,7 @@ else
 }
 
 @code {
-    private List<Course> courses = new();
+    private List<CoursesViewModel> courses = new();
 
     protected override async Task OnInitializedAsync()
     {

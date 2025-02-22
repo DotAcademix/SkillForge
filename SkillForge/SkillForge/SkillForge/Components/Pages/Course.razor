@@ -1,0 +1,92 @@
+﻿@page "/course/{courseId}"
+
+@using AutoMapper
+@using SkillForge.Core.Services.Abstraction
+@using SkillForge.Data.Entities
+@using SkillForge.Models.Courses
+@inject ICourseService courseService
+@inject NavigationManager NavManager
+
+<h2 class="text-3xl font-bold text-gray-800 mb-4 text-center">Course Details</h2>
+
+@if (isLoading)
+{
+    <p class="text-center text-gray-500">Loading course details...</p>
+}
+else if (course == null)
+{
+    <p class="text-center text-red-500">Course not found.</p>
+}
+else
+{
+    <div class="max-w-3xl mx-auto bg-white rounded-2xl shadow-lg p-6">
+        <h3 class="text-2xl font-semibold text-gray-900">@course.Name</h3>
+        <p class="text-gray-600 mt-2">@course.Description</p>
+
+        <h4 class="mt-4 font-semibold text-lg">Modules:</h4>
+        @if (course.Modules != null && course.Modules.Any())
+        {
+            <ul class="list-disc list-inside text-gray-700">
+                @foreach (var module in course.Modules)
+                {
+                    <li>@module.Name</li>
+                }
+            </ul>
+        }
+        else
+        {
+            <p class="text-gray-500">No modules available.</p>
+        }
+
+        <div class="mt-6">
+            <button class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700"
+            @onclick="GoBack">
+                ← Back to Courses
+            </button>
+        </div>
+    </div>
+}
+@inject IMapper mapper
+
+@code {
+    [Parameter] public string? courseId { get; set; }
+    private CoursesViewModel? course; // This is your view model (SkillForge.Components.Pages.Course)
+    private bool isLoading = true;
+    private CancellationToken cancellationToken = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (string.IsNullOrEmpty(courseId))
+        {
+            course = null;
+            isLoading = false;
+            return;
+        }
+
+        try
+        {
+            var courseEntity = await courseService.GetByIdAsync(courseId, cancellationToken);
+
+
+            if (course == null)
+            {
+                Console.WriteLine($"Course with ID {courseId} not found.");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching course: {ex.Message}");
+            course = null;
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private void GoBack()
+    {
+        NavManager.NavigateTo("/courses");
+    }
+
+}
