@@ -1,0 +1,87 @@
+﻿@page "/Account/MyCourses"
+
+<PageTitle>My Courses</PageTitle>
+
+@inject NavigationManager Navigation
+<style>
+    main{
+        grid-area: main;
+    }
+
+    h3 {
+        border-bottom: 2px solid;
+        margin-bottom: 1em;
+    }
+
+    h1 {
+        border-bottom: 2px solid;
+        margin-bottom: 2rem;
+    }
+
+    .section .menu1 {
+        width: 210pxpx;
+        justify-content: flex-end;
+        background: #fefefe;
+        border-right: 2px solid;
+    }
+
+    .section .container .menu2 {
+        padding: min(3em, 4%);
+    }
+
+        /* .section .container .menu2 .p{
+            margin-bottom: 1.75em;
+        } */
+
+        .prf-link {
+        background: transparent;
+        border: none;
+        color: black;
+        padding: 8px 15px;
+        text-decoration: none;
+        transition: background 0.3s ease, color 0.3s ease;
+        width: 100%;
+    }
+
+        .prf-link:hover,
+        .prf-link:focus {
+            background: linear-gradient(to right, #3da4dc, var(--mainColor));
+            color: white;
+            border-radius: 0.5rem;
+        }
+
+        .prf-link::after {
+            border: none;
+        }
+</style>
+<main>
+    <h1>My Profile</h1>
+    <div class="row">
+        <div class="col-lg-6">
+            <section class="menu1">
+                <NavLink class="prf-link" href="/Account">
+                    <span class="bi bi-house-door-fill" aria-hidden="true"></span> Profile
+                </NavLink>
+                <NavLink class="prf-link" href="Account/MyCourses">
+                    <span class="bi bi-house-door-fill" aria-hidden="true"></span> My Courses
+                </NavLink>
+            </section>
+        </div>
+
+        <div class="col-lg-6">
+            <section class="menu2">
+                <h3>My Courses</h3>
+                @SelectedContent
+            </section>
+        </div>
+    </div>
+</main>
+
+@code {
+    private RenderFragment SelectedContent => builder =>
+    {
+        builder.OpenElement(0, "p");
+        builder.AddContent(1, "This is placeholder text.");
+        builder.CloseElement();
+    };
+}
