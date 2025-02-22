@@ -1,7 +1,74 @@
 ﻿@page "/Home"
 
+@using SkillForge.Data
+@using SkillForge.Data.Entities
+@using Microsoft.EntityFrameworkCore
+
+@inject ApplicationDbContext _context
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+<style>
+    main {
+        padding: min(30px, 7%); 
+        grid-area: main;
+    }
+
+    h1 {
+        border-bottom: 2px solid;
+    }
+</style>
+
 <PageTitle>Home</PageTitle>
 
-    <h1>Hello, world!</h1>
+<h1>Welcome to SkillForge</h1>
+<main>
+    @if (UserCourses.Any())
+    {
+    <h4>Your Courses</h4>
+    <ul>
+        @foreach (var course in UserCourses)
+        {
+            <li>
+                <strong>@course.Name</strong>
+                <p>@course.Description</p>
+            </li>
+        }
+    </ul>
+    }
+    else
+    {
+    <p>You are not enrolled in any courses yet.</p>
+    }
+</main>
 
-    Welcome to your new app.
+
+@code {
+    private List<Course> UserCourses = new();
+    private ApplicationUser CurrentUser;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity.IsAuthenticated)
+        {
+            string userId = user.FindFirst(c => c.Type == "sub")?.Value;
+            CurrentUser = _context.Users.Include(u => u.EnrolledCourses)
+                                        .Include(u => u.ManagedCourses)
+                                        .FirstOrDefault(u => u.Id == userId);
+            LoadUserCourses();
+        }
+    }
+
+    private void LoadUserCourses()
+    {
+        if (CurrentUser != null)
+        {
+            UserCourses = CurrentUser.EnrolledCourses.Concat(CurrentUser.ManagedCourses)
+                                         .Distinct()
+                                         .Take(3)
+                                         .ToList();
+        }
+    }
+}
