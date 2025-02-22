@@ -15,6 +15,7 @@ using SkillForge.Data.Entities;
 using SkillForge.Data.Enums;
 using SkillForge.Data.Repositories;
 using SkillForge.Data.Repositories.Abstraction;
+using SkillForge.Profiles;
 
 namespace SkillForge
 {
@@ -52,8 +53,9 @@ namespace SkillForge
 
             Assembly currentAssembly = Assembly.GetExecutingAssembly();
             builder.Services.AddAutoMapper(currentAssembly);
-
+            builder.Services.AddAutoMapper(typeof(CoursesProfile));
             //add dependencies
+
             builder.Services.AddScoped<IAuthenticationContext, AuthenticationContext>();
             builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             builder.Services.AddScoped<ICourseService, CourseService>();

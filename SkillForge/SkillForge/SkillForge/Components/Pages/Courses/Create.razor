@@ -1,22 +1,58 @@
 ﻿@page "/Course/Create"
 
+@using SkillForge.Core.Prototypes
 @using SkillForge.Core.Services.Abstraction
-@using SkillForge.Models.Courses;
+@using SkillForge.Data.Entities
+@using SkillForge.Models.Courses
+@using AutoMapper
+@using Microsoft.AspNetCore.Components.Forms
+
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavManager
 @inject ICourseService courseService
+@inject IMapper mapper
 
+<h3>Create a New Course</h3>
 
+<EditForm Model="Course" OnValidSubmit="CreateCourse" FormName="CourseForm">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div>
+        <label>Name:</label>
+        <InputText @bind-Value="Course.Name" class="form-control" />
+        <ValidationMessage For="@(() => Course.Name)" />
+    </div>
+
+    <div>
+        <label>Description:</label>
+        <InputTextArea @bind-Value="Course.Description" class="form-control" />
+        <ValidationMessage For="@(() => Course.Description)" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Create Course</button>
+</EditForm>
 
 @code {
-    [SupplyParameterFromForm(FormName = "CourseForm")]
-    public CoursesViewModel Course { get; set } = new CoursesViewModel();
+    [SupplyParameterFromForm(FormName = "CourseForm")] // Ensure FormName matches the EditForm
+    public CoursesViewModel Course { get; set; } = new();
 
-    protected override async Task OnInitializeAsync()
+    CancellationToken cancellationToken = new();
+
+    protected override async Task OnInitializedAsync()
     {
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
+    }
 
+    public async Task CreateCourse()
+    {
+        var courseEntity = mapper.Map<Course>(Course);
+        var coursePrototypeEntity = mapper.Map<CoursePrototype>(courseEntity);
 
+        await courseService.CreateAsync(coursePrototypeEntity, cancellationToken);
+
+        // Navigate back to course list or show success message
+        NavManager.NavigateTo("/courses");
     }
 }

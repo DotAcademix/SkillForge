@@ -6,7 +6,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using SkillForge.Core.Authentication.Abstraction;
-using SkillForge.Core.Authentication.Extentions;
 using SkillForge.Core.Prototypes;
 using SkillForge.Core.Services.Abstraction;
 using SkillForge.Data.Entities;
@@ -28,7 +27,6 @@ public class CourseService(IRepository<Course> repository, IAuthenticationContex
         entity.EnrolledUsers = prototype.EnrolledUsers;
         entity.ManagerUsers = prototype.ManagerUsers;
 
-        this._authContext.GetCurrentRequired();
 
         return Task.CompletedTask;
     }

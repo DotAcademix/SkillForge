@@ -1,5 +1,4 @@
 using SkillForge.Core.Authentication.Abstraction;
-using SkillForge.Core.Authentication.Extentions;
 using SkillForge.Core.Prototypes;
 using SkillForge.Data.Entities;
 using SkillForge.Data.Repositories.Abstraction;
@@ -19,7 +18,6 @@ public class ModuleService(IRepository<Module> repository, IAuthenticationContex
         entity.VideoUrl = prototype.VideoUrl;
         entity.Course = prototype.Course;
 
-        this._authContext.GetCurrentRequired();
 
         return Task.CompletedTask;
     }
