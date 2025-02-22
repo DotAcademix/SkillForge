@@ -1,4 +1,6 @@
-﻿using SkillForge.Core.Services.Abstraction;
+﻿namespace SkillForge.Core.Services;
+
+using SkillForge.Core.Services.Abstraction;
 using SkillForge.Data.Repositories.Abstraction;
 using System;
 using System.Collections.Generic;
@@ -6,26 +8,25 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
-
-namespace SkillForge.Core.Services;
+using SkillForge.Data.Entities;
 
 public abstract class BaseService<TEntity, TPrototype>(IRepository<TEntity> repository) : IService<TEntity, TPrototype>
-    where TEntity : class
+    where TEntity : class, IEntity<string>
     where TPrototype : class
 {
     private readonly IRepository<TEntity> _repository = repository ?? throw new ArgumentNullException(nameof(repository));
 
-    public Task<TEntity?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+    public Task<TEntity?> GetByIdAsync(string id, CancellationToken cancellationToken)
         => this._repository.GetAsync([e => e.Id == id, ..this.BuildAdditionalFilter()], cancellationToken);
 
-    public Task<TEntity?> GetByIdCompleteAsync(Guid id, CancellationToken cancellationToken)
+    public Task<TEntity?> GetByIdCompleteAsync(string id, CancellationToken cancellationToken)
         => this._repository.GetCompleteAsync([e => e.Id == id, .. this.BuildAdditionalFilter()], cancellationToken);
 
-    public Task<TEntity[]> GetByIdsAsync(IEnumerable<Guid> ids, CancellationToken cancellationToken)
+    public Task<TEntity[]> GetByIdsAsync(IEnumerable<string> ids, CancellationToken cancellationToken)
         => this._repository.GetManyAsync([e => ids.Contains(e.Id), .. this.BuildAdditionalFilter()], cancellationToken);
-    public Task<TEntity?> GetByIdWithNavigationsAsync(Guid id, IEnumerable<string> navigations, CancellationToken cancellationToken)
+    public Task<TEntity?> GetByIdWithNavigationsAsync(string id, IEnumerable<string> navigations, CancellationToken cancellationToken)
         => this._repository.GetWithNavigationsAsync([e => e.Id == id, .. this.BuildAdditionalFilter()], navigations, cancellationToken);
-    public async Task<TEntity?> GetByIdRequiredAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<TEntity?> GetByIdRequiredAsync(string id, CancellationToken cancellationToken)
     {
         TEntity? entity = await this._repository.GetAsync([e => e.Id == id, .. this.BuildAdditionalFilter()], cancellationToken);
         if(entity is null) throw new InvalidOperationException("Entity was not found.");
@@ -43,7 +44,7 @@ public abstract class BaseService<TEntity, TPrototype>(IRepository<TEntity> repo
         await this._repository.CreateAsync(entity, cancellationToken);
         return entity;
     }
-    public async Task<TEntity> UpdateAsync(Guid entityId, TPrototype prototype, CancellationToken cancellationToken)
+    public async Task<TEntity> UpdateAsync(string entityId, TPrototype prototype, CancellationToken cancellationToken)
     {
         TEntity entity = await this.GetByIdRequiredAsync(entityId, cancellationToken);
         
@@ -55,7 +56,7 @@ public abstract class BaseService<TEntity, TPrototype>(IRepository<TEntity> repo
         return entity;
     }
 
-    public async Task DeleteAsync(Guid entityId, CancellationToken cancellationToken)
+    public async Task DeleteAsync(string entityId, CancellationToken cancellationToken)
     {
         TEntity entity = await this.GetByIdRequiredAsync(entityId, cancellationToken);
 

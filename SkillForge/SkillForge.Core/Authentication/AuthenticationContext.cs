@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SkillForge.Data;
 
 namespace SkillForge.Core.Authentication;
 
@@ -12,9 +13,9 @@ public class AuthenticationContext : IAuthenticationContext
 {
     public bool IsAuthenticated => this.CurrentUser != null;
 
-    public IdentityUser? CurrentUser { get; private set; }
+    public ApplicationUser? CurrentUser { get; private set; }
 
-    public void Authenticate(IdentityUser user)
+    public void Authenticate(ApplicationUser user)
     {
         ArgumentNullException.ThrowIfNull(user);
         this.CurrentUser = user;

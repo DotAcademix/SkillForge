@@ -10,11 +10,12 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using SkillForge.Data.Entities;
 
 namespace SkillForge.Data.Repositories;
 
 public class Repository<TEntity>(ApplicationDbContext dbContext) : IRepository<TEntity>
-    where TEntity : class
+    where TEntity : class, IEntity<string>
 {
     private readonly ApplicationDbContext _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
 

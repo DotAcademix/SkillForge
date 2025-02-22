@@ -28,15 +28,15 @@ public class CourseService(IRepository<Course> repository, IAuthenticationContex
         entity.EnrolledUsers = prototype.EnrolledUsers;
         entity.ManagerUsers = prototype.ManagerUsers;
 
-        entity.User = this._authContext.GetCurrentRequired();
+        this._authContext.GetCurrentRequired();
 
         return Task.CompletedTask;
     }
 
-    protected override IEnumerable<Expression<Func<Course, bool>>> BuildAdditionalFilter()
+    /*protected override IEnumerable<Expression<Func<Course, bool>>> BuildAdditionalFilter()
     {
-        IdentityUser currrentUser = this._authContext.GetCurrentRequired();
-        return [c => c.UserId == currrentUser.Id];
-    }
+        IdentityUser currentUser = this._authContext.GetCurrentRequired();
+        return [c => c.User.Id == currentUser.Id];
+    }*/
 }
 //TODO: add the User and UserId inside the entity in .data project

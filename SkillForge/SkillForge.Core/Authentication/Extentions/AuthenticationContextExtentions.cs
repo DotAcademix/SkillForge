@@ -5,12 +5,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SkillForge.Data;
 
 namespace SkillForge.Core.Authentication.Extentions;
 
 public static class AuthenticationContextExtentions
 {
-    public static IdentityUser GetCurrentRequired(this IAuthenticationContext authContext)
+    public static ApplicationUser GetCurrentRequired(this IAuthenticationContext authContext)
     {
         if (!authContext.IsAuthenticated) throw new InvalidOperationException("This action requires an authinticated user.");
 

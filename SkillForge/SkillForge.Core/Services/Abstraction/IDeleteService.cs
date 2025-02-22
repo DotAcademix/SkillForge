@@ -8,6 +8,6 @@ namespace SkillForge.Core.Services.Abstraction;
 
 public interface IDeleteService
 {
-    // maybe add later - Task SoftDeleteAsync(Guid entityId, CancellationToken cancellationToken);
-    Task DeleteAsync(Guid entityId, CancellationToken cancellationToken);
+    // maybe add later - Task SoftDeleteAsync(string entityId, CancellationToken cancellationToken);
+    Task DeleteAsync(string entityId, CancellationToken cancellationToken);
 }
