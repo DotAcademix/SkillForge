@@ -1,26 +1,26 @@
-﻿using Microsoft.AspNetCore.Identity;
-using SkillForge.Core.Authentication.Abstraction;
-using SkillForge.Core.Authentication.Extentions;
-using SkillForge.Core.Protorypes;
-using SkillForge.Core.Services.Abstraction;
-using SkillForge.Data.Entities;
-using SkillForge.Data.Repositories.Abstraction;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
+using SkillForge.Core.Authentication.Abstraction;
+using SkillForge.Core.Authentication.Extentions;
+using SkillForge.Core.Prototypes;
+using SkillForge.Core.Services.Abstraction;
+using SkillForge.Data.Entities;
+using SkillForge.Data.Repositories.Abstraction;
 
 namespace SkillForge.Core.Services;
 
-public class CourseService(IRepository<Course> repository, IAuthenticationContext authContext) : BaseService<Course, CoursesPrototype>(repository), ICourseService
+public class CourseService(IRepository<Course> repository, IAuthenticationContext authContext) : BaseService<Course, CoursePrototype>(repository), ICourseService
 {
     private readonly IAuthenticationContext _authContext = authContext ?? throw new ArgumentNullException(nameof(authContext));
-    protected override Task<Course> InitializeAsync(CoursesPrototype prototype, CancellationToken cancellationToken)
+    protected override Task<Course> InitializeAsync(CoursePrototype prototype, CancellationToken cancellationToken)
         => Task.FromResult(new Course());
 
-    protected override Task ApplyAsync(Course entity, CoursesPrototype prototype, CancellationToken cancellationToken)
+    protected override Task ApplyAsync(Course entity, CoursePrototype prototype, CancellationToken cancellationToken)
     {
         entity.Name = prototype.Name;
         entity.Description = prototype.Description;

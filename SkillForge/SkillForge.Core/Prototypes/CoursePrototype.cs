@@ -1,17 +1,15 @@
-﻿using SkillForge.Data;
-using SkillForge.Data.Entities;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SkillForge.Data;
+using SkillForge.Data.Entities;
 
-namespace SkillForge.Core.Protorypes;
+namespace SkillForge.Core.Prototypes;
 
-public class CoursesPrototype
+public class CoursePrototype
 {
-
-    
     public required string Name { get; init; }
     public required string Description { get; init; }
 

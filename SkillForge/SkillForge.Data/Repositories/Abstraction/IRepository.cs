@@ -1,6 +1,5 @@
 ﻿namespace SkillForge.Data.Repositories.Abstraction;
 
-using SkillForge.Data.Sorting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using SkillForge.Data.Entities;
+using SkillForge.Data.Sorting;
 
 public interface IRepository<TEntity>
     where TEntity : class, IEntity<string>
