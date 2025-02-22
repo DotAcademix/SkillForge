@@ -1,16 +1,23 @@
 ﻿@page "/Home"
 @rendermode RenderMode.InteractiveServer
 
+@using Microsoft.AspNetCore.Identity
 @using SkillForge.Data
 @using SkillForge.Data.Entities
+@using SkillForge.Core.Services.Abstraction
+@using System.Security.Claims
 @using Microsoft.EntityFrameworkCore
+@using SkillForge.Data.Enums
+@using SkillForge.Data.Repositories.Abstraction
 
-@inject ApplicationDbContext _context
+@inject ICourseService courseService
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@inject RoleManager<IdentityRole> RoleManager
+@inject UserManager<ApplicationUser> UserManager
 
 <style>
     main {
-        padding: min(30px, 7%); 
+        padding: min(30px, 7%);
         grid-area: main;
     }
 
@@ -22,30 +29,35 @@
 <PageTitle>Home</PageTitle>
 
 <h1>Welcome to SkillForge</h1>
+
 <main>
-    @if (UserCourses.Any())
+
+
+    <h4 class="mt-6">Instructors</h4>
+    @if (Instructors.Any())
     {
-    <h4>Your Courses</h4>
-    <ul>
-        @foreach (var course in UserCourses)
-        {
-            <li>
-                <strong>@course.Name</strong>
-                <p>@course.Description</p>
-            </li>
-        }
-    </ul>
+        <ul>
+            @foreach (var instructor in Instructors)
+            {
+                <li>
+                    <strong>@instructor.UserName</strong>
+                    <p>@instructor.Email</p>
+                </li>
+            }
+        </ul>
     }
     else
     {
-    <p>You are not enrolled in any courses yet.</p>
+        <p>No instructors found.</p>
     }
 </main>
 
-
 @code {
-    private List<Course> UserCourses = new();
+    private List<Course> AvailableCourses = new();
+    private List<ApplicationUser> Instructors = new();
     private ApplicationUser CurrentUser;
+    private List<string> userRole = [];
+    CancellationToken cancellationToken = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -54,22 +66,22 @@
 
         if (user.Identity.IsAuthenticated)
         {
-            string userId = user.FindFirst(c => c.Type == "sub")?.Value;
-            CurrentUser = _context.Users.Include(u => u.EnrolledCourses)
-                                        .Include(u => u.ManagedCourses)
-                                        .FirstOrDefault(u => u.Id == userId);
-            LoadUserCourses();
+            var roleClaim = user.FindAll(ClaimTypes.Role);
+            if (roleClaim != null)
+            {
+                userRole = roleClaim.Select(r => r.Value).ToList(); // Assign user role
+            }
         }
     }
 
-    private void LoadUserCourses()
+
+    private async Task LoadInstructors()
     {
-        if (CurrentUser != null)
-        {
-            UserCourses = CurrentUser.EnrolledCourses.Concat(CurrentUser.ManagedCourses)
-                                         .Distinct()
-                                         .Take(3)
-                                         .ToList();
-        }
+        var instructorRole = await RoleManager.FindByNameAsync(Role.Instructor);
+
+
+        var usersInRole = await UserManager.GetUsersInRoleAsync(Role.Instructor);
+        Instructors = usersInRole.ToList();
+
     }
 }
