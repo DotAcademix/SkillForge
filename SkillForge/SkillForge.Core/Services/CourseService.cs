@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace SkillForge.Core.Services;
 
-public class CourseService(IRepository<Course> repository, IAuthenticationContext authContext) : BaseService<Course, CoursesPrototype>(repository)
+public class CourseService(IRepository<Course> repository, IAuthenticationContext authContext) : BaseService<Course, CoursesPrototype>(repository), ICourseService
 {
     private readonly IAuthenticationContext _authContext = authContext ?? throw new ArgumentNullException(nameof(authContext));
     protected override Task<Course> InitializeAsync(CoursesPrototype prototype, CancellationToken cancellationToken)

@@ -17,4 +17,6 @@ public class Course<TKey> where TKey : IEquatable<TKey>
     public List<Module> Modules { get; set; } = new();
     public List<ApplicationUser> EnrolledUsers { get; set; } = new();
     public List<ApplicationUser> ManagerUsers { get; set; } = new();
+
+
 }

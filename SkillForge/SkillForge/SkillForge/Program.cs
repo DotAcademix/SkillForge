@@ -1,14 +1,20 @@
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using SkillForge.Client.Pages;
 using SkillForge.Components;
 using SkillForge.Components.Account;
+using SkillForge.Core.Authentication;
+using SkillForge.Core.Authentication.Abstraction;
+using SkillForge.Core.Services;
+using SkillForge.Core.Services.Abstraction;
 using SkillForge.Data;
 using SkillForge.Data.Entities;
 using SkillForge.Data.Enums;
 using SkillForge.Data.Repositories;
 using SkillForge.Data.Repositories.Abstraction;
+using System.Reflection;
 
 namespace SkillForge
 {
@@ -44,8 +50,13 @@ namespace SkillForge
             
             builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 
+            Assembly currentAssembly = Assembly.GetExecutingAssembly();
+            builder.Services.AddAutoMapper(currentAssembly);
+
             //add dependencies
+            builder.Services.AddScoped<IAuthenticationContext, AuthenticationContext>();
             builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+            builder.Services.AddScoped<ICourseService, CourseService>();
 
             var app = builder.Build();
             
@@ -67,6 +78,10 @@ namespace SkillForge
             app.UseAntiforgery();
 
             app.MapStaticAssets();
+
+            app.UseAuthentication();
+            app.UseAuthorization();
+
             app.MapRazorComponents<App>()
                 .AddInteractiveServerRenderMode()
                 .AddInteractiveWebAssemblyRenderMode()
