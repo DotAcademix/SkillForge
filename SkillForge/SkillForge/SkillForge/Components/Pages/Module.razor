@@ -1,5 +1,114 @@
-<h3>Module</h3>
+﻿@page "/module/{moduleId}"
+
+@rendermode RenderMode.InteractiveServer
+
+@using AutoMapper
+@using SkillForge.Core.Services.Abstraction
+@using SkillForge.Data.Entities
+@using SkillForge.Models.Modules
+@inject IModuleService moduleService
+@inject NavigationManager NavManager
+
+<h2 class="text-3xl font-bold text-gray-800 mb-4 text-center">Module Details</h2>
+
+@if (isLoading)
+{
+    <p class="text-center text-gray-500">Loading module details...</p>
+}
+else if (module == null)
+{
+    <p class="text-center text-red-500">Module not found.</p>
+}
+else
+{
+    <div class="max-w-3xl mx-auto bg-white rounded-2xl shadow-lg p-6">
+        <h3 class="text-2xl font-semibold text-gray-900">@module.Name</h3>
+        <p class="text-gray-600 mt-2">@module.Content</p>
+
+        @if (!string.IsNullOrEmpty(module.VideoUrl) && IsValidYouTubeUrl(module.VideoUrl))
+        {
+            <div class="mt-4">
+                <h4 class="font-semibold text-lg">Video:</h4>
+                <iframe width="100%" height="500px" 
+                        src="@GetYouTubeEmbedUrl(module.VideoUrl)" 
+                        frameborder="0" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                        allowfullscreen>
+                </iframe>
+            </div>
+        }
+        else
+        {
+            <p class="text-gray-500 mt-4">No video available.</p>
+        }
+
+        <div class="mt-6">
+            <MudButton Variant="Variant.Filled" Color="Color.Primary"
+            @onclick="async () => await GoBack()">
+                ← Back to Courses
+            </MudButton>
+        </div>
+    </div>
+}
+@inject IMapper mapper
 
 @code {
-    
+    [Parameter] public string? moduleId { get; set; }
+    private ModuleViewModel? module;
+    private bool isLoading = true;
+
+    private CancellationToken cancellationToken = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (string.IsNullOrEmpty(moduleId))
+        {
+            module = null;
+            isLoading = false;
+            return;
+        }
+
+        try
+        {
+            var moduleEntity = await moduleService.GetByIdAsync(moduleId, cancellationToken);
+            module = mapper.Map<ModuleViewModel>(moduleEntity);
+
+            if (module == null)
+            {
+                Console.WriteLine($"Module with ID {moduleId} not found.");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching module: {ex.Message}");
+            module = null;
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task GoBack()
+    {
+        NavManager.NavigateTo("/courses");
+    }
+
+    private bool IsValidYouTubeUrl(string url)
+    {
+        return Uri.TryCreate(url, UriKind.Absolute, out Uri? uri) && uri.Host.Contains("youtube.com");
+    }
+
+    private string GetYouTubeEmbedUrl(string url)
+    {
+        var videoId = ExtractYouTubeVideoId(url);
+        return videoId != null ? $"https://www.youtube.com/embed/{videoId}" : string.Empty;
+    }
+
+    private string? ExtractYouTubeVideoId(string url)
+    {
+        var regex = new System.Text.RegularExpressions.Regex(@"(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]+)");
+        var match = regex.Match(url);
+        return match.Success ? match.Groups[1].Value : null;
+    }
 }
