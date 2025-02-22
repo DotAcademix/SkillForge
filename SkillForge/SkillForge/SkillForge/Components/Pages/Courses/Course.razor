@@ -63,6 +63,13 @@ else
                                         </MudButton>
                                     </div>
                                 }
+                                <AuthorizeView Roles="@Role.Student">
+                                    <MudButton Variant="Variant.Outlined"
+                                               Color="Color.Primary"
+                                               @onclick="async () => await //add">
+                                        Enroll
+                                    </MudButton>
+                                </AuthorizeView>
                             </MudPaper>
                         </MudItem>
                     }
@@ -78,7 +85,7 @@ else
 
                                 <div class="text-center">
                                     <MudIcon Icon="@Icons.Material.Filled.Add" Size="Size.Large"
-                                             Class="text-primary mb-2"/>
+                                             Class="text-primary mb-2" />
                                     <strong class="text-gray-700">Create New Module</strong>
                                 </div>
                             </MudPaper>
@@ -102,7 +109,7 @@ else
                                   @onclick="CreateModule">
 
                             <div class="text-center">
-                                <MudIcon Icon="@Icons.Material.Filled.Add" Size="Size.Large" Class="text-primary mb-2"/>
+                                <MudIcon Icon="@Icons.Material.Filled.Add" Size="Size.Large" Class="text-primary mb-2" />
                                 <strong class="text-gray-700">Create New Module</strong>
                             </div>
                         </MudPaper>
