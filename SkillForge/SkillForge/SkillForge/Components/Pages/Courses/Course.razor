@@ -42,11 +42,11 @@ else
                         <MudItem>
                             <MudPaper Class="d-flex flex-column align-center justify-center mud-width-full py-8"
                                       Style="border: 5px solid transparent;
-                         border-image: linear-gradient(to right, #3da4dc, var(--mainColor)) 1;"
-                                      Height="160px" Width="260px">
+                         border-image: linear-gradient(to right, #3da4dc, var(--mainColor)) 1;cursor: pointer;"
+                                      Height="160px" Width="260px"
+                                      @onclick="async () => await OpenModule(module.Id)">
 
-                                <div class="text-center cursor-pointer"
-                                     @onclick="async () => await OpenModule(module.Id)">
+                                <div class="text-center cursor-pointer">
                                     <strong>@module.Name</strong>
                                 </div>
                                 @if (userRole.Contains(Role.Admin) || userRole.Contains(Role.Instructor))
@@ -58,7 +58,8 @@ else
                                         </MudButton>
 
                                         <MudButton Variant="Variant.Outlined" Color="Color.Error"
-                                                   Size="Size.Small" @onclick="async () => await DeleteModule(module.Id)">
+                                                   Size="Size.Small"
+                                                   @onclick="async () => await DeleteModule(module.Id)">
                                             🗑 Delete
                                         </MudButton>
                                     </div>
@@ -66,31 +67,53 @@ else
                             </MudPaper>
                         </MudItem>
                     }
+                    @if (userRole.Contains(Role.Admin) || userRole.Contains(Role.Instructor))
+                    {
+                        <MudItem>
+                            <MudPaper Class="d-flex flex-column align-center justify-center mud-width-full py-8"
+                                      Style="border: 5px solid transparent;
+                         border-image: linear-gradient(to right, #3da4dc, var(--mainColor)) 1;
+                         cursor: pointer;"
+                                      Height="160px" Width="260px"
+                                      @onclick="CreateModule">
 
+                                <div class="text-center">
+                                    <MudIcon Icon="@Icons.Material.Filled.Add" Size="Size.Large"
+                                             Class="text-primary mb-2"/>
+                                    <strong class="text-gray-700">Create New Module</strong>
+                                </div>
+                            </MudPaper>
+                        </MudItem>
+                    }
                 </MudGrid>
             </ul>
         }
-        
+
         else
         {
-            <p class="text-gray-500">No modules available.</p>
-        }
-        @if (userRole.Contains(Role.Admin) || userRole.Contains(Role.Instructor))
-        {
-            <MudItem>
-                <MudPaper Class="d-flex flex-column align-center justify-center mud-width-full py-8"
-                          Style="border: 5px solid transparent;
+            if (userRole.Contains(Role.Admin) || userRole.Contains(Role.Instructor))
+            {
+                <MudGrid Spacing="6" Justify="Justify.Center">
+                    <MudItem>
+                        <MudPaper Class="d-flex flex-column align-center justify-center mud-width-full py-8"
+                                  Style="border: 5px solid transparent;
                          border-image: linear-gradient(to right, #3da4dc, var(--mainColor)) 1;
                          cursor: pointer;"
-                          Height="160px" Width="260px"
-                          @onclick="CreateModule">
+                                  Height="160px" Width="260px"
+                                  @onclick="CreateModule">
 
-                    <div class="text-center">
-                        <MudIcon Icon="@Icons.Material.Filled.Add" Size="Size.Large" Class="text-primary mb-2" />
-                        <strong class="text-gray-700">Create New Module</strong>
-                    </div>
-                </MudPaper>
-            </MudItem>
+                            <div class="text-center">
+                                <MudIcon Icon="@Icons.Material.Filled.Add" Size="Size.Large" Class="text-primary mb-2"/>
+                                <strong class="text-gray-700">Create New Module</strong>
+                            </div>
+                        </MudPaper>
+                    </MudItem>
+                </MudGrid>
+            }
+            else
+            {
+                <p class="text-gray-500">No modules available.</p>
+            }
         }
 
         <div class="mt-6">
@@ -121,6 +144,7 @@ else
             isLoading = false;
             return;
         }
+
         if (user.Identity.IsAuthenticated)
         {
             var roleClaim = user.FindAll(ClaimTypes.Role);
@@ -129,6 +153,7 @@ else
                 userRole = roleClaim.Select(r => r.Value).ToList(); // Assign user role
             }
         }
+
         try
         {
             var courseEntity = await courseService.GetByIdAsync(courseId, cancellationToken);
@@ -155,14 +180,17 @@ else
     {
         NavManager.NavigateTo("/courses");
     }
+
     private async Task OpenModule(string moduleId)
     {
-        NavManager.NavigateTo($"/module/{moduleId}");
+        NavManager.NavigateTo($"course/{courseId}/module/{moduleId}");
     }
+
     private async Task EditModule(string moduleId)
     {
-        NavManager.NavigateTo($"/module/{moduleId}/edit");
+        NavManager.NavigateTo($"course/{courseId}/module/{moduleId}/edit");
     }
+
     private async Task CreateModule()
     {
         if (!string.IsNullOrEmpty(courseId))
@@ -186,4 +214,5 @@ else
             Console.WriteLine($"Error deleting module: {ex.Message}");
         }
     }
+
 }

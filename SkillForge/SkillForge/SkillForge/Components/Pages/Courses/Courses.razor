@@ -21,24 +21,32 @@ else if (courses.Count == 0)
 }
 else
 {
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <MudGrid Spacing="6" Justify="Justify.Center">
         @foreach (var course in courses)
         {
             string localId = course.Id;
-            <div class="bg-white rounded-2xl shadow-lg hover:shadow-xl transition p-6 cursor-pointer">
-                <h3 class="text-xl font-semibold text-gray-800">@course.Name</h3>
-                <p class="text-gray-600 mt-2 line-clamp-3">@course.Description</p>
-                <MudButton Variant="Variant.Filled" Color="Color.Primary" @onclick="async () => await OpenCourse(localId)">
-                    View Course
-                </MudButton>
-            </div>
+            <MudItem>
+                <MudPaper Class="d-flex flex-column align-center py-8"
+                          Style="border: 5px solid transparent;
+                         border-image: linear-gradient(to right, #3da4dc, var(--mainColor)) 1;"
+                          Height="200px" Width="370px">
+                    <MudText Typo="Typo.h3">@course.Name</MudText>
+                    @* <MudText Typo="Typo.body1">@course.Description</MudText> *@
+                    <MudButton Style="height: 100px; margin-top: 30px; font-size: 20px"
+                               Variant="Variant.Filled" 
+                               Color="Color.Primary"
+                               @onclick="async () => await OpenCourse(localId)">
+                        View Course
+                    </MudButton>
+                </MudPaper>
+            </MudItem>
         }
-    </div>
+    </MudGrid>
 }
 
 @code {
     CancellationToken cancellationToken;
-    private List<Course> courses;
+    private List<SkillForge.Data.Entities.Course> courses;
 
     protected override async Task OnInitializedAsync()
     {
@@ -50,4 +58,5 @@ else
     {
         NavManager.NavigateTo($"/course/{courseId}");
     }
+
 }

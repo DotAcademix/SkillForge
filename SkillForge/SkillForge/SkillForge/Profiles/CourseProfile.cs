@@ -12,6 +12,6 @@ public class CourseProfile : Profile
         this.CreateMap<CoursesViewModel, Course>();
         this.CreateMap<Course, CoursesViewModel>();
         this.CreateMap<Course, CoursePrototype>();
-        this.CreateMap<SkillForge.Data.Entities.Course, SkillForge.Components.Pages.Course>();
+        this.CreateMap<SkillForge.Data.Entities.Course, SkillForge.Components.Pages.Courses.Course>();
     }
 }

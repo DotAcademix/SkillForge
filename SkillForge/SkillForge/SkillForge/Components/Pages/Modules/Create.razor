@@ -64,7 +64,7 @@
 
     public async Task CreateModule()
     {
-        var moduleEntity = mapper.Map<Module>(Module);
+        var moduleEntity = mapper.Map<SkillForge.Data.Entities.Module>(Module);
         var course = await courseService.GetByIdAsync(courseId, cancellationToken);
         moduleEntity.Course = course;
         //course.Modules.Add(moduleEntity);

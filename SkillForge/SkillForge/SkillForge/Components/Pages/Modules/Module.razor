@@ -1,4 +1,4 @@
-﻿@page "/module/{moduleId}"
+﻿@page "/course/{courseId}/module/{moduleId}"
 
 @rendermode RenderMode.InteractiveServer
 
@@ -45,7 +45,7 @@ else
         <div class="mt-6">
             <MudButton Variant="Variant.Filled" Color="Color.Primary"
             @onclick="async () => await GoBack()">
-                ← Back to Courses
+                ← Back to Course
             </MudButton>
         </div>
     </div>
@@ -53,6 +53,7 @@ else
 @inject IMapper mapper
 
 @code {
+    [Parameter] public string? courseId { get; set; }
     [Parameter] public string? moduleId { get; set; }
     private ModuleViewModel? module;
     private bool isLoading = true;
@@ -91,7 +92,7 @@ else
 
     private async Task GoBack()
     {
-        NavManager.NavigateTo("/courses");
+        NavManager.NavigateTo($"/course/{courseId}");
     }
 
     private bool IsValidYouTubeUrl(string url)

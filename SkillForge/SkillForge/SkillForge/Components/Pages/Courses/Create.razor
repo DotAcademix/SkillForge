@@ -45,10 +45,10 @@
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
     }
-
+    
     public async Task CreateCourse()
     {
-        var courseEntity = mapper.Map<Course>(Course);
+        var courseEntity = mapper.Map<SkillForge.Data.Entities.Course>(Course);
         var coursePrototypeEntity = mapper.Map<CoursePrototype>(courseEntity);
 
         await courseService.CreateAsync(coursePrototypeEntity, cancellationToken);
