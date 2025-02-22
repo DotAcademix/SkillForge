@@ -1,16 +1,16 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
-using SkillForge.Data.Repositories.Extentions;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using SkillForge.Data.Repositories.Abstraction;
-using SkillForge.Data.Sorting;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using SkillForge.Data.Entities;
+using SkillForge.Data.Repositories.Abstraction;
+using SkillForge.Data.Repositories.Extentions;
+using SkillForge.Data.Sorting;
 
 namespace SkillForge.Data.Repositories;
 

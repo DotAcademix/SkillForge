@@ -1,14 +1,14 @@
 ﻿namespace SkillForge.Core.Services;
 
-using SkillForge.Core.Services.Abstraction;
-using SkillForge.Data.Repositories.Abstraction;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using SkillForge.Core.Services.Abstraction;
 using SkillForge.Data.Entities;
+using SkillForge.Data.Repositories.Abstraction;
 
 public abstract class BaseService<TEntity, TPrototype>(IRepository<TEntity> repository) : IService<TEntity, TPrototype>
     where TEntity : class, IEntity<string>
