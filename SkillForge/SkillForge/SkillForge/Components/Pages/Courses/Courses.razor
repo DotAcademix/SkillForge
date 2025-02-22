@@ -3,10 +3,12 @@
 
 @using SkillForge.Core.Services.Abstraction
 @using SkillForge.Data.Entities
+@using SkillForge.Data.Enums
 @using SkillForge.Models.Courses
 
 @inject ICourseService CourseService
 @inject NavigationManager NavManager
+@inject IJSRuntime JS //later fix
 
 <h2 class="text-3xl font-bold mb-6 text-center">Available Courses</h2>
 
@@ -25,18 +27,34 @@ else
         {
             string localId = course.Id;
             <MudItem>
-                <MudPaper Class="d-flex flex-column align-center py-8"
+                <MudPaper Class="d-flex flex-column align-center py-6 px-4"
                           Style="border: 5px solid transparent;
-                         border-image: linear-gradient(to right, #3da4dc, var(--mainColor)) 1;"
-                          Height="200px" Width="370px">
-                    <MudText Typo="Typo.h3">@course.Name</MudText>
-                    @* <MudText Typo="Typo.body1">@course.Description</MudText> *@
-                    <MudButton Style="height: 100px; margin-top: 30px; font-size: 20px"
-                               Variant="Variant.Filled" 
-                               Color="Color.Primary"
-                               @onclick="async () => await OpenCourse(localId)">
-                        View Course
-                    </MudButton>
+                             border-image: linear-gradient(to right, #3da4dc, var(--mainColor)) 1;"
+                          Height="220px" Width="370px">
+
+                    <MudText Typo="Typo.h4" Class="text-center">@course.Name</MudText>
+
+                    <div class="d-flex justify-between mt-4" style="width: 100%;">
+                        <MudButton Variant="Variant.Filled"
+                                   Color="Color.Primary"
+                                   @onclick="async () => await OpenCourse(localId)">
+                            View Course
+                        </MudButton>
+                        <AuthorizeView Roles="@Role.Admin">
+                            <MudButton Variant="Variant.Outlined"
+                                       Color="Color.Warning"
+                                       @onclick="async () => await EditCourse(localId)">
+                                Edit
+                            </MudButton>
+
+                            <MudButton Variant="Variant.Outlined"
+                                       Color="Color.Error"
+                                       @onclick="async () => await DeleteCourse(localId)">
+                                Delete
+                            </MudButton>
+                        </AuthorizeView>
+                    </div>
+
                 </MudPaper>
             </MudItem>
         }
@@ -56,6 +74,26 @@ else
     private async Task OpenCourse(string courseId)
     {
         NavManager.NavigateTo($"/course/{courseId}");
+    }
+    private async Task EditCourse(string courseId)
+    {
+        NavManager.NavigateTo($"/course/{courseId}/edit");
+    }
+
+    private async Task DeleteCourse(string courseId)
+    {
+        bool confirmDelete = await JS.InvokeAsync<bool>("confirm", "Are you sure you want to delete this course?");
+        if (!confirmDelete) return;
+
+        try
+        {
+            await CourseService.DeleteAsync(courseId, cancellationToken);
+            courses = courses.Where(c => c.Id != courseId).ToList(); // Update UI
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error deleting course: {ex.Message}");
+        }
     }
 
 }

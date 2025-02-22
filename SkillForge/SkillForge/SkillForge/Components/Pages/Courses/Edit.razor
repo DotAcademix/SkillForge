@@ -1,0 +1,110 @@
+﻿@page "/course/{courseId}/edit"
+@using SkillForge.Core.Services.Abstraction
+@using SkillForge.Models.Courses
+
+@rendermode RenderMode.InteractiveServer
+
+@inject ICourseService courseService
+@inject NavigationManager NavManager
+
+<MudGrid Justify="Justify.Center">
+    <MudItem xs="12" sm="7">
+        <MudPaper Class="pa-4">
+            <MudForm @ref="form" Model="course" OnValidSubmit="UpdateCourse">
+                <MudText Typo="Typo.h5" Class="mb-4">Edit Course</MudText>
+
+                <MudTextField T="string" Label="Name"
+                HelperText="Enter course name"
+                InputType="InputType.Text"
+                @bind-Value="course.Name"
+                Required="true" />
+
+                <MudTextField T="string" Label="Description"
+                HelperText="Enter course description"
+                InputType="InputType.Text"
+                @bind-Value="course.Description"
+                Required="true" />
+
+                <div class="d-flex justify-end mt-4">
+                    <MudButton Variant="Variant.Filled"
+                    Color="Color.Primary"
+                    Disabled="@(!success)"
+                    Type="submit">
+                        Save Changes
+                    </MudButton>
+
+                    <MudButton Variant="Variant.Outlined"
+                    Color="Color.Secondary"
+                    Class="ml-2"
+                    @onclick="GoBack">
+                        Cancel
+                    </MudButton>
+                </div>
+
+                @if (!string.IsNullOrEmpty(message))
+                {
+                    <MudAlert Severity="MudBlazor.Severity.Info" Class="mt-3">
+                        @message
+                    </MudAlert>
+                }
+            </MudForm>
+        </MudPaper>
+    </MudItem>
+</MudGrid>
+
+@code {
+    [Parameter] public string? courseId { get; set; }
+
+    private CourseViewModel course = new();
+    private MudForm form;
+    private bool success = true;
+    private string message = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (string.IsNullOrEmpty(courseId))
+        {
+            message = "Invalid Course ID.";
+            return;
+        }
+
+        try
+        {
+            var courseEntity = await courseService.GetByIdAsync(courseId, new CancellationToken());
+            course = new CoursesViewModel
+                {
+                    Name = courseEntity.Name,
+                    Description = courseEntity.Description
+                };
+        }
+        catch (Exception ex)
+        {
+            message = $"Error loading course: {ex.Message}";
+        }
+    }
+
+    private async Task UpdateCourse()
+    {
+        try
+        {
+            var updatedCourse = new CourseViewModel
+                {
+                    Id = course.Id,
+                    Name = course.Name,
+                    Description = course.Description
+                };
+
+            await courseService.UpdateAsync(courseId, updatedCourse);
+            message = "Course updated successfully!";
+        }
+        catch (Exception ex)
+        {
+            message = $"Error updating course: {ex.Message}";
+        }
+    }
+
+    private void GoBack()
+    {
+        NavManager.NavigateTo($"/course/{courseId}");
+    }
+}
