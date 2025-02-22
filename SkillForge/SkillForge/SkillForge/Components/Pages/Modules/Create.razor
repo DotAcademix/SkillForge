@@ -6,7 +6,9 @@
 @using SkillForge.Data.Entities
 @using SkillForge.Models.Modules
 @using AutoMapper
+@using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.Forms
+@using SkillForge.Data.Enums
 
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavManager
@@ -14,46 +16,54 @@
 @inject ICourseService courseService
 @inject IMapper mapper
 
-<h3>Create a New Module</h3>
+@attribute [Authorize(Roles = $"{Role.Admin},{Role.Instructor}")]
 
-<EditForm Model="Module" OnValidSubmit="CreateModule" FormName="ModuleForm">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
+<AuthorizeView Roles="@Role.Admin">
+    <h3>Create a New Module</h3>
 
-    <div>
-        <label>Name:</label>
-        <InputText @bind-Value="Module.Name" class="form-control" />
-        <ValidationMessage For="@(() => Module.Name)" />
-    </div>
+    <EditForm Model="Module" OnValidSubmit="CreateModule" FormName="ModuleForm">
+        <ChildContent Context="moduleContext">
+            <DataAnnotationsValidator/>
+            <ValidationSummary/>
 
-    <div>
-        <label>Content:</label>
-        <InputTextArea @bind-Value="Module.Content" class="form-control" />
-        <ValidationMessage For="@(() => Module.Content)" />
-    </div>
-    <div>
-        <label>Video URL:</label>
-        <InputTextArea @bind-Value="Module.VideoUrl" class="form-control" />
-        <ValidationMessage For="@(() => Module.VideoUrl)" />
-    </div>
+            <div>
+                <label>Name:</label>
+                <InputText @bind-Value="Module.Name" class="form-control"/>
+                <ValidationMessage For="@(() => Module.Name)"/>
+            </div>
 
-    <!-- Video Thumbnail Preview -->
-    @if (!string.IsNullOrEmpty(Module.VideoUrl) && IsValidYouTubeUrl(Module.VideoUrl))
-    {
-        var thumbnailUrl = GetYouTubeThumbnailUrl(Module.VideoUrl);
-        <div class="mt-3">
-            <h5>Video Preview:</h5>
-            <img src="@thumbnailUrl" alt="Video Thumbnail" class="w-32 h-32 object-cover rounded-md" />
-        </div>
-    }
+            <div>
+                <label>Content:</label>
+                <InputTextArea @bind-Value="Module.Content" class="form-control"/>
+                <ValidationMessage For="@(() => Module.Content)"/>
+            </div>
+            <div>
+                <label>Video URL:</label>
+                <InputTextArea @bind-Value="Module.VideoUrl" class="form-control"/>
+                <ValidationMessage For="@(() => Module.VideoUrl)"/>
+            </div>
 
-    <button type="submit" class="btn btn-primary">Create Module</button>
-</EditForm>
+            <!-- Video Thumbnail Preview -->
+            @if (!string.IsNullOrEmpty(Module.VideoUrl) && IsValidYouTubeUrl(Module.VideoUrl))
+            {
+                var thumbnailUrl = GetYouTubeThumbnailUrl(Module.VideoUrl);
+                <div class="mt-3">
+                    <h5>Video Preview:</h5>
+                    <img src="@thumbnailUrl" alt="Video Thumbnail" class="w-32 h-32 object-cover rounded-md"/>
+                </div>
+            }
+
+            <button type="submit" class="btn btn-primary">Create Module</button>
+        </ChildContent>
+    </EditForm>
+</AuthorizeView>
 
 @code {
     [Parameter] public string? courseId { get; set; }
+
     [SupplyParameterFromForm(FormName = "ModuleForm")]
     public ModuleViewModel Module { get; set; } = new();
+
     CancellationToken cancellationToken = new();
 
     protected override async Task OnInitializedAsync()
@@ -71,12 +81,13 @@
         var coursePrototype = mapper.Map<CoursePrototype>(course);
         courseService.UpdateAsync(courseId, coursePrototype, cancellationToken);
         var modulePrototypeEntity = mapper.Map<ModulePrototype>(moduleEntity);
-        
+
         await moduleService.CreateAsync(modulePrototypeEntity, cancellationToken);
 
         // Navigate back to module list or show success message
         NavManager.NavigateTo($"/course/{courseId}");
     }
+
     // Function to check if the URL is a valid YouTube URL
     private bool IsValidYouTubeUrl(string url)
     {
@@ -89,6 +100,7 @@
         var videoId = ExtractYouTubeVideoId(url);
         return videoId != null ? $"https://img.youtube.com/vi/{videoId}/hqdefault.jpg" : string.Empty;
     }
+
     // Function to extract YouTube Video ID from the URL
     private string? ExtractYouTubeVideoId(string url)
     {
@@ -96,4 +108,5 @@
         var match = regex.Match(url);
         return match.Success ? match.Groups[1].Value : null;
     }
+
 }

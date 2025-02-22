@@ -1,69 +1,83 @@
-﻿@page "/module/{moduleId}/edit"
+﻿@page "/course/{courseId}/module/{moduleId}/edit"
+@rendermode RenderMode.InteractiveServer
 
 @using SkillForge.Core.Services.Abstraction
 @using SkillForge.Data.Entities
 @using SkillForge.Models.Modules
 @using AutoMapper
+@using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.Forms
+@using SkillForge.Core.Prototypes
+@using SkillForge.Data.Enums
 
 @inject IModuleService moduleService
 @inject NavigationManager NavManager
 @inject IMapper mapper
 
-<h3 class="text-2xl font-bold text-gray-800 mb-4 text-center">Edit Module</h3>
+@attribute [Authorize(Roles = $"{Role.Admin},{Role.Instructor}")]
 
-@if (isLoading)
-{
-    <p class="text-center text-gray-500">Loading module details...</p>
-}
-else if (Module == null)
-{
-    <p class="text-center text-red-500">Module not found.</p>
-}
-else
-{
-    <EditForm Model="Module" OnValidSubmit="UpdateModule">
-        <DataAnnotationsValidator />
-        <ValidationSummary />
+<AuthorizeView Roles="@Role.Admin">
+    <h3 class="text-2xl font-bold text-gray-800 mb-4 text-center">Edit Module</h3>
 
-        <div>
-            <label>Name:</label>
-            <InputText @bind-Value="Module.Name" class="form-control" />
-            <ValidationMessage For="@(() => Module.Name)" />
-        </div>
+    @if (isLoading)
+    {
+        <p class="text-center text-gray-500">Loading module details...</p>
+    }
+    else if (Module == null)
+    {
+        <p class="text-center text-red-500">Module not found.</p>
+    }
+    else
+    {
+        <EditForm Model="Module" OnValidSubmit="UpdateModule" FormName="ModuleForm2">
+            <ChildContent Context="courseContext">
+                <DataAnnotationsValidator/>
+                <ValidationSummary/>
 
-        <div>
-            <label>Content:</label>
-            <InputTextArea @bind-Value="Module.Content" class="form-control" />
-            <ValidationMessage For="@(() => Module.Content)" />
-        </div>
+                <div>
+                    <label>Name:</label>
+                    <InputText @bind-Value="Module.Name" class="form-control"/>
+                    <ValidationMessage For="@(() => Module.Name)"/>
+                </div>
 
-        <div>
-            <label>Video URL:</label>
-            <InputTextArea @bind-Value="Module.VideoUrl" class="form-control" />
-            <ValidationMessage For="@(() => Module.VideoUrl)" />
-        </div>
+                <div>
+                    <label>Content:</label>
+                    <InputTextArea @bind-Value="Module.Content" class="form-control"/>
+                    <ValidationMessage For="@(() => Module.Content)"/>
+                </div>
 
-        <!-- Video Thumbnail Preview -->
-        @if (!string.IsNullOrEmpty(Module.VideoUrl) && IsValidYouTubeUrl(Module.VideoUrl))
-        {
-            var thumbnailUrl = GetYouTubeThumbnailUrl(Module.VideoUrl);
-            <div class="mt-3">
-                <h5>Video Preview:</h5>
-                <img src="@thumbnailUrl" alt="Video Thumbnail" class="w-32 h-32 object-cover rounded-md" />
-            </div>
-        }
+                <div>
+                    <label>Video URL:</label>
+                    <InputTextArea @bind-Value="Module.VideoUrl" class="form-control"/>
+                    <ValidationMessage For="@(() => Module.VideoUrl)"/>
+                </div>
 
-        <div class="mt-4">
-            <button type="submit" class="btn btn-primary">Update Module</button>
-            <button type="button" class="btn btn-secondary ml-2" @onclick="CancelEdit">Cancel</button>
-        </div>
-    </EditForm>
-}
+                <!-- Video Thumbnail Preview -->
+                @if (!string.IsNullOrEmpty(Module.VideoUrl) && IsValidYouTubeUrl(Module.VideoUrl))
+                {
+                    var thumbnailUrl = GetYouTubeThumbnailUrl(Module.VideoUrl);
+                    <div class="mt-3">
+                        <h5>Video Preview:</h5>
+                        <img src="@thumbnailUrl" alt="Video Thumbnail" class="w-32 h-32 object-cover rounded-md"/>
+                    </div>
+                }
+
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-primary">Update Module</button>
+                    <button type="button" class="btn btn-secondary ml-2" @onclick="CancelEdit">Cancel</button>
+                </div>
+            </ChildContent>
+        </EditForm>
+    }
+</AuthorizeView>
 
 @code {
     [Parameter] public string? moduleId { get; set; }
-    public ModuleViewModel? Module { get; set; } = new();
+    [Parameter] public string? courseId { get; set; }
+
+    [SupplyParameterFromForm(FormName = "ModuleForm2")]
+    public ModuleViewModel Module { get; set; } = new();
+
     private bool isLoading = true;
     private CancellationToken cancellationToken = new();
 
@@ -98,9 +112,10 @@ else
 
         try
         {
-            var moduleEntity = mapper.Map<Module>(Module);
-            await moduleService.UpdateAsync(moduleEntity, cancellationToken);
-            NavManager.NavigateTo($"/module/{moduleId}");
+            var modulePrototype = mapper.Map<ModulePrototype>(Module);
+
+            await moduleService.UpdateAsync(moduleId, modulePrototype, cancellationToken);
+            NavManager.NavigateTo($"/course/{courseId}/module/{moduleId}");
         }
         catch (Exception ex)
         {
@@ -110,7 +125,7 @@ else
 
     private void CancelEdit()
     {
-        NavManager.NavigateTo($"/module/{moduleId}");
+        NavManager.NavigateTo($"/course/{courseId}/module/{moduleId}");
     }
 
     private bool IsValidYouTubeUrl(string url)
@@ -130,4 +145,5 @@ else
         var match = regex.Match(url);
         return match.Success ? match.Groups[1].Value : null;
     }
+
 }

@@ -13,6 +13,7 @@ public class ModuleProfile : Profile
         this.CreateMap<ModuleViewModel, SkillForge.Data.Entities.Module>();
         this.CreateMap<SkillForge.Data.Entities.Module, ModuleViewModel>();
         this.CreateMap<SkillForge.Data.Entities.Module, ModulePrototype>();
+        this.CreateMap<ModuleViewModel, ModulePrototype>();
         this.CreateMap<SkillForge.Data.Entities.Module, SkillForge.Components.Pages.Modules.Module>();
     }
         
