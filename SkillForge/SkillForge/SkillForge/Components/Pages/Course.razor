@@ -1,5 +1,7 @@
 ﻿@page "/course/{courseId}"
 
+@rendermode RenderMode.InteractiveServer
+
 @using AutoMapper
 @using SkillForge.Core.Services.Abstraction
 @using SkillForge.Data.Entities
@@ -40,7 +42,7 @@ else
 
         <div class="mt-6">
             <button class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700"
-            @onclick="GoBack">
+                @onclick:stopPropagation @onclick="async () => await GoBack()">
                 ← Back to Courses
             </button>
         </div>
@@ -67,6 +69,7 @@ else
         {
             var courseEntity = await courseService.GetByIdAsync(courseId, cancellationToken);
 
+            course = mapper.Map<CoursesViewModel>(courseEntity);
 
             if (course == null)
             {
@@ -84,7 +87,7 @@ else
         }
     }
 
-    private void GoBack()
+    private async Task GoBack()
     {
         NavManager.NavigateTo("/courses");
     }
