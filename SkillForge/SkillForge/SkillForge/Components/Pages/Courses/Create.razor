@@ -1,0 +1,22 @@
+﻿@page "/Course/Create"
+
+@using SkillForge.Core.Services.Abstraction
+@using SkillForge.Models.Courses;
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavManager
+@inject ICourseService courseService
+
+
+
+@code {
+    [SupplyParameterFromForm(FormName = "CourseForm")]
+    public CoursesViewModel Course { get; set } = new CoursesViewModel();
+
+    protected override async Task OnInitializeAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+
+    }
+}
