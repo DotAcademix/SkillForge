@@ -21,29 +21,29 @@ else
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         @foreach (var course in courses)
         {
-            <div class="bg-white rounded-2xl shadow-lg hover:shadow-xl transition p-6 cursor-pointer"
-                 @onclick="() => OpenCourse(course.Id)">
-                <h3 class="text-xl font-semibold text-gray-800">@course.Name</h3>
-                <p class="text-gray-600 mt-2 line-clamp-3">@course.Description</p>
-                <div class="mt-4">
-                    <button class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-                        View Course
-                    </button>
-                </div>
+            var localId = course.Id;
+            <div class="bg-white rounded-2xl shadow-lg hover:shadow-xl transition p-6 cursor-pointer">
+            <h3 class="text-xl font-semibold text-gray-800">@course.Name</h3>
+            <p class="text-gray-600 mt-2 line-clamp-3">@course.Description</p>
+            <button class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700" @onclick="() => OpenCourse(localId)">
+                View Course
+            </button>
             </div>
         }
     </div>
 }
 
 @code {
-    private List<Course> courses = new();
+    CancellationToken cancellationToken;
+    private List<Course> courses;
 
     protected override async Task OnInitializedAsync()
     {
-        courses = await courseService.GetAllAsync();
+        var coursesResult = await courseService.GetAllAsync(cancellationToken);
+        courses = coursesResult.ToList();
     }
 
-    private void OpenCourse(int courseId)
+    private async Task OpenCourse(string courseId)
     {
         NavManager.NavigateTo($"/course/{courseId}");
     }
