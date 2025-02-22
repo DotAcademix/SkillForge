@@ -50,8 +50,8 @@
 </EditForm>
 
 @code {
-
     [Parameter] public string? courseId { get; set; }
+    [SupplyParameterFromForm(FormName = "ModuleForm")]
     public ModuleViewModel Module { get; set; } = new();
     CancellationToken cancellationToken = new();
 
@@ -66,13 +66,15 @@
         var moduleEntity = mapper.Map<Module>(Module);
         var course = await courseService.GetByIdAsync(courseId, cancellationToken);
         moduleEntity.Course = course;
+        //course.Modules.Add(moduleEntity);
+        var coursePrototype = mapper.Map<CoursePrototype>(course);
+        courseService.UpdateAsync(courseId, coursePrototype, cancellationToken);
         var modulePrototypeEntity = mapper.Map<ModulePrototype>(moduleEntity);
-
-
+        
         await moduleService.CreateAsync(modulePrototypeEntity, cancellationToken);
 
         // Navigate back to module list or show success message
-        NavManager.NavigateTo($"/courses/{courseId}");
+        NavManager.NavigateTo($"/course/{courseId}");
     }
     // Function to check if the URL is a valid YouTube URL
     private bool IsValidYouTubeUrl(string url)

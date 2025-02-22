@@ -13,7 +13,7 @@ using SkillForge.Data.Repositories.Abstraction;
 
 namespace SkillForge.Core.Services;
 
-public class CourseService(IRepository<Course> repository, IAuthenticationContext authContext) : BaseService<Course, CoursePrototype>(repository), ICourseService
+public class CourseService(IRepository<Course> repository, IRepository<Module> moduleRepository, IAuthenticationContext authContext) : BaseService<Course, CoursePrototype>(repository), ICourseService
 {
     private readonly IAuthenticationContext _authContext = authContext ?? throw new ArgumentNullException(nameof(authContext));
     protected override Task<Course> InitializeAsync(CoursePrototype prototype, CancellationToken cancellationToken)
@@ -27,14 +27,25 @@ public class CourseService(IRepository<Course> repository, IAuthenticationContex
         entity.EnrolledUsers = prototype.EnrolledUsers;
         entity.ManagerUsers = prototype.ManagerUsers;
 
-
         return Task.CompletedTask;
     }
+    
+    public override async Task<Course?> GetByIdAsync(string id, CancellationToken cancellationToken = default)
+    {
+        // Retrieve the course
+        var course = await repository.GetAsync([c => c.Id == id], cancellationToken);
+        if (course is null)
+            return null;
 
+        // Retrieve modules associated with the course
+        var modules = await moduleRepository.GetManyAsync([m => m.Course.Id == id], cancellationToken);
+        course.Modules = modules.ToList(); // Assign retrieved modules
+
+        return course;
+    }
     /*protected override IEnumerable<Expression<Func<Course, bool>>> BuildAdditionalFilter()
     {
         IdentityUser currentUser = this._authContext.GetCurrentRequired();
         return [c => c.User.Id == currentUser.Id];
     }*/
 }
-//TODO: add the User and UserId inside the entity in .data project

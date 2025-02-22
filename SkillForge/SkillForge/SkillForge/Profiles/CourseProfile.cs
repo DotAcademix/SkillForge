@@ -5,9 +5,9 @@ using SkillForge.Core.Prototypes;
 
 namespace SkillForge.Profiles;
 
-public class CoursesProfile : Profile
+public class CourseProfile : Profile
 {
-    public CoursesProfile()
+    public CourseProfile()
     {
         this.CreateMap<CoursesViewModel, Course>();
         this.CreateMap<Course, CoursesViewModel>();

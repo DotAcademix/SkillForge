@@ -15,15 +15,15 @@ public abstract class BaseService<TEntity, TPrototype>(IRepository<TEntity> repo
     where TPrototype : class
 {
     private readonly IRepository<TEntity> _repository = repository ?? throw new ArgumentNullException(nameof(repository));
-    public Task<TEntity[]> GetAllAsync(CancellationToken cancellationToken)
+    public virtual Task<TEntity[]> GetAllAsync(CancellationToken cancellationToken)
         => this._repository.GetManyAsync([e => e.GetType() == typeof(TEntity)], cancellationToken: cancellationToken);
-    public Task<TEntity?> GetByIdAsync(string id, CancellationToken cancellationToken)
+    public virtual Task<TEntity?> GetByIdAsync(string id, CancellationToken cancellationToken)
         => this._repository.GetAsync([e => e.Id == id, ..this.BuildAdditionalFilter()], cancellationToken);
-    public Task<TEntity[]> GetByIdsAsync(IEnumerable<string> ids, CancellationToken cancellationToken)
+    public virtual Task<TEntity[]> GetByIdsAsync(IEnumerable<string> ids, CancellationToken cancellationToken)
         => this._repository.GetManyAsync([e => ids.Contains(e.Id), .. this.BuildAdditionalFilter()], cancellationToken);
-    public Task<TEntity?> GetByIdCompleteAsync(string id, CancellationToken cancellationToken)
+    public virtual Task<TEntity?> GetByIdCompleteAsync(string id, CancellationToken cancellationToken)
         => this._repository.GetCompleteAsync([e => e.Id == id, .. this.BuildAdditionalFilter()], cancellationToken);
-    public async Task<TEntity?> GetByIdRequiredAsync(string id, CancellationToken cancellationToken)
+    public async virtual Task<TEntity?> GetByIdRequiredAsync(string id, CancellationToken cancellationToken)
     {
         TEntity? entity = await this._repository.GetAsync([e => e.Id == id, .. this.BuildAdditionalFilter()], cancellationToken);
         if(entity is null) throw new InvalidOperationException("Entity was not found.");

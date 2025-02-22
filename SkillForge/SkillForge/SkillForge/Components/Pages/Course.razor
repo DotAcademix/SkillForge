@@ -26,13 +26,19 @@ else
         <p class="text-gray-600 mt-2">@course.Description</p>
 
         <h4 class="mt-4 font-semibold text-lg">Modules:</h4>
-        @if (course.Modules != null && course.Modules.Any())
+        @if (course.Modules.Count > 0)
         {
             <ul class="list-disc list-inside text-gray-700">
-                @foreach (var module in course.Modules)
-                {
-                    <li>@module.Name</li>
-                }
+                <MudGrid Spacing="6" Justify="Justify.Center">
+                    @foreach (var module in course.Modules)
+                    {
+                            <MudItem>
+                                <MudPaper Class="d-flex align-center justify-center mud-width-full py-8" Style="background-color: #087990" Height="140px" Width="260px" >
+                                    @module.Name
+                                </MudPaper>
+                            </MudItem>
+                    }
+                </MudGrid>
             </ul>
         }
         else

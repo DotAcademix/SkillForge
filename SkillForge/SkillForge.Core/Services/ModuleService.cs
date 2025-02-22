@@ -20,7 +20,6 @@ public class ModuleService(IRepository<Module> repository, IAuthenticationContex
         entity.VideoUrl = prototype.VideoUrl;
         entity.Course = prototype.Course;
 
-
         return Task.CompletedTask;
     }
 }

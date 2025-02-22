@@ -10,10 +10,10 @@ public class ModuleProfile : Profile
 {
     public ModuleProfile()
     {
-        this.CreateMap<ModuleViewModel, Module>();
-        this.CreateMap<Module, ModuleViewModel>();
-        this.CreateMap<Module, ModulePrototype>();
-       //this.CreateMap<SkillForge.Data.Entities.Course, SkillForge.Components.Pages.Moduke>();
+        this.CreateMap<ModuleViewModel, SkillForge.Data.Entities.Module>();
+        this.CreateMap<SkillForge.Data.Entities.Module, ModuleViewModel>();
+        this.CreateMap<SkillForge.Data.Entities.Module, ModulePrototype>();
+        this.CreateMap<SkillForge.Data.Entities.Module, SkillForge.Components.Pages.Module>();
     }
         
 }

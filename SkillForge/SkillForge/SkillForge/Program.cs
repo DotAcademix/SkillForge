@@ -55,7 +55,8 @@ namespace SkillForge
 
             Assembly currentAssembly = Assembly.GetExecutingAssembly();
             builder.Services.AddAutoMapper(currentAssembly);
-            builder.Services.AddAutoMapper(typeof(CoursesProfile));
+            builder.Services.AddAutoMapper(typeof(CourseProfile));
+            builder.Services.AddAutoMapper(typeof(ModuleProfile));
             //add dependencies
 
             builder.Services.AddScoped<IAuthenticationContext, AuthenticationContext>();
