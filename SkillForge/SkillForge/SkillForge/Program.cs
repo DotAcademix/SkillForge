@@ -59,6 +59,7 @@ namespace SkillForge
             builder.Services.AddScoped<IAuthenticationContext, AuthenticationContext>();
             builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             builder.Services.AddScoped<ICourseService, CourseService>();
+            builder.Services.AddScoped<IModuleService, ModuleService>();
 
             var app = builder.Build();
             
