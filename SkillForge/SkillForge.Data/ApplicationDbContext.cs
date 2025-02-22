@@ -51,5 +51,17 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             .HasOne(m => m.Course)
             .WithMany(c => c.Modules)
             .OnDelete(DeleteBehavior.Cascade);
+        
+        /*builder.Entity<Module>()
+            .HasOne(module => module.User)
+            .WithMany()
+            .IsRequired()
+            .OnDelete(DeleteBehavior.SetNull);
+        
+        builder.Entity<Course>()
+            .HasOne(course => course.User)
+            .WithMany()
+            .IsRequired()
+            .OnDelete(DeleteBehavior.SetNull);*/
     }
 }

@@ -1,0 +1,69 @@
+﻿@page "/Course/Create"
+@rendermode RenderMode.InteractiveServer
+
+@using SkillForge.Core.Prototypes
+@using SkillForge.Core.Services.Abstraction
+@using SkillForge.Data.Entities
+@using SkillForge.Models.Courses
+@using AutoMapper
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Authorization
+@using SkillForge.Data.Enums
+
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavManager
+@inject ICourseService courseService
+@inject IMapper mapper
+
+@attribute [Authorize(Roles = $"{Role.Admin}")]
+
+<AuthorizeView Roles="@Role.Admin">
+    <h3>Create a New Course</h3>
+
+    <EditForm Model="Course" OnValidSubmit="CreateCourse" FormName="CourseForm">
+        <ChildContent Context="courseContext">
+            <DataAnnotationsValidator/>
+            <ValidationSummary/>
+
+            <div>
+                <label>Name:</label>
+                <InputText @bind-Value="Course.Name" class="form-control"/>
+                <ValidationMessage For="@(() => Course.Name)"/>
+            </div>
+
+            <div>
+                <label>Description:</label>
+                <InputTextArea @bind-Value="Course.Description" class="form-control"/>
+                <ValidationMessage For="@(() => Course.Description)"/>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Create Course</button>
+        </ChildContent>
+    </EditForm>
+</AuthorizeView>
+
+@code {
+
+    [SupplyParameterFromForm(FormName = "CourseForm")] // Ensure FormName matches the EditForm
+    public CourseViewModel Course { get; set; } = new();
+
+    CancellationToken cancellationToken = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+    }
+
+    public async Task CreateCourse()
+    {
+        var courseEntity = mapper.Map<SkillForge.Data.Entities.Course>(Course);
+        var coursePrototypeEntity = mapper.Map<CoursePrototype>(courseEntity);
+
+        await courseService.CreateAsync(coursePrototypeEntity, cancellationToken);
+
+        // Navigate back to course list or show success message
+        NavManager.NavigateTo("/courses");
+    }
+
+}

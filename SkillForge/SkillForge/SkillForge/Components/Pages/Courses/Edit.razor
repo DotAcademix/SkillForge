@@ -1,0 +1,73 @@
+﻿@page "/course/{courseId}/edit"
+@using SkillForge.Core.Services.Abstraction
+@using SkillForge.Models.Courses
+@using AutoMapper
+@using SkillForge.Core.Prototypes
+@using System.ComponentModel.DataAnnotations
+
+@rendermode RenderMode.InteractiveServer
+
+@inject ICourseService courseService
+@inject NavigationManager NavManager
+@inject IMapper mapper
+
+<EditForm Model="@model" OnValidSubmit="UpdateCourse">
+    <DataAnnotationsValidator/>
+    <MudGrid>
+        <MudItem xs="12" sm="7">
+            <MudCard>
+                <MudCardContent>
+                    <MudTextField Label="Name" HelperText="Name"
+                                  @bind-Value="model.Name" For="@(() => model.Name)"/>
+                    <MudTextField Label="Description" Class="mt-3"
+                                  @bind-Value="model.Description" For="@(() => model.Description)"/>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Save changes</MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+</EditForm>
+
+
+@code {
+    [Parameter] public string? courseId { get; set; }
+
+    private CourseViewModel model = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var courseEntity = await courseService.GetByIdAsync(courseId, new CancellationToken());
+            model = mapper.Map<CourseViewModel>(courseEntity);
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+    }
+
+    private async Task UpdateCourse()
+    {
+        try
+        {
+            var updatedCourse = mapper.Map<CoursePrototype>(model);
+            Console.WriteLine("test");
+            await courseService.UpdateAsync(courseId, updatedCourse, default);
+
+            GoBack();
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+    }
+
+    private void GoBack()
+    {
+        NavManager.NavigateTo($"/course/{courseId}");
+    }
+
+}

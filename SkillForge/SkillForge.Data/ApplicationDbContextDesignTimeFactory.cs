@@ -1,13 +1,13 @@
-﻿using Microsoft.EntityFrameworkCore.Design;
-using Microsoft.EntityFrameworkCore;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
 //using SkillForge.Data.Entities; -- To be added.
 using SkillForge.Data;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace SkillForge.Data
 {

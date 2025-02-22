@@ -12,7 +12,7 @@ using SkillForge.Data;
 namespace SkillForge.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250217131952_InitialCreate")]
+    [Migration("20250222095756_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -20,7 +20,7 @@ namespace SkillForge.Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.1")
+                .HasAnnotation("ProductVersion", "9.0.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);

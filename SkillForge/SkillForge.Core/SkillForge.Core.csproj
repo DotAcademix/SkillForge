@@ -10,4 +10,8 @@
     <ProjectReference Include="..\SkillForge.Data\SkillForge.Data.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Authentication\Extentions\" />
+  </ItemGroup>
+
 </Project>

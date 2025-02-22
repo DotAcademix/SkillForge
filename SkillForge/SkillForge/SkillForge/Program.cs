@@ -1,12 +1,22 @@
+using System.Reflection;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using MudBlazor.Services;
 using SkillForge.Client.Pages;
 using SkillForge.Components;
 using SkillForge.Components.Account;
+using SkillForge.Core.Authentication;
+using SkillForge.Core.Authentication.Abstraction;
+using SkillForge.Core.Services;
+using SkillForge.Core.Services.Abstraction;
 using SkillForge.Data;
 using SkillForge.Data.Entities;
 using SkillForge.Data.Enums;
+using SkillForge.Data.Repositories;
+using SkillForge.Data.Repositories.Abstraction;
+using SkillForge.Profiles;
 
 namespace SkillForge
 {
@@ -26,6 +36,8 @@ namespace SkillForge
             builder.Services.AddScoped<IdentityUserAccessor>();
             builder.Services.AddScoped<IdentityRedirectManager>();
             builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
+            
+            builder.Services.AddMudServices();
 
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -40,6 +52,17 @@ namespace SkillForge
                 .AddDefaultTokenProviders();
             
             builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
+
+            Assembly currentAssembly = Assembly.GetExecutingAssembly();
+            builder.Services.AddAutoMapper(currentAssembly);
+            builder.Services.AddAutoMapper(typeof(CourseProfile));
+            builder.Services.AddAutoMapper(typeof(ModuleProfile));
+            //add dependencies
+
+            builder.Services.AddScoped<IAuthenticationContext, AuthenticationContext>();
+            builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+            builder.Services.AddScoped<ICourseService, CourseService>();
+            builder.Services.AddScoped<IModuleService, ModuleService>();
 
             var app = builder.Build();
             
@@ -58,9 +81,15 @@ namespace SkillForge
 
             app.UseHttpsRedirection();
 
-            app.UseAntiforgery();
 
             app.MapStaticAssets();
+
+            app.UseRouting();
+            app.UseAuthentication();
+            app.UseAuthorization();
+
+            app.UseAntiforgery();
+            
             app.MapRazorComponents<App>()
                 .AddInteractiveServerRenderMode()
                 .AddInteractiveWebAssemblyRenderMode()
