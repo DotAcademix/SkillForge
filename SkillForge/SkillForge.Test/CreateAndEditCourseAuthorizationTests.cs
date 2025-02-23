@@ -19,7 +19,7 @@ namespace SkillForge.Test;
 
 public class CreateAndEditCourseAuthorizationTests : TestContext
 {
-    private TestAuthorizationContext authContext;
+    private TestAuthorizationContext _authContext;
     public CreateAndEditCourseAuthorizationTests()
     {
         Services.AddMudServices();
@@ -39,14 +39,14 @@ public class CreateAndEditCourseAuthorizationTests : TestContext
         Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>(); 
         Services.AddDbContext<ApplicationDbContext>();
         
-        authContext = this.AddTestAuthorization();
-        authContext.SetAuthorized("testuser");
+        _authContext = this.AddTestAuthorization();
+        _authContext.SetAuthorized("testuser");
     }
     [Fact]
     public void AdminCanAccessCreateCourse()
     {
         // Arrange
-        authContext.SetRoles(Role.Admin);
+        _authContext.SetRoles(Role.Admin);
         
 	
         // Act
@@ -63,7 +63,7 @@ public class CreateAndEditCourseAuthorizationTests : TestContext
     public void InstructorCanNotAccessCreateCourse()
     {
         // Arrange
-        authContext.SetRoles(Role.Instructor);
+        _authContext.SetRoles(Role.Instructor);
         
 	
         // Act
@@ -78,7 +78,7 @@ public class CreateAndEditCourseAuthorizationTests : TestContext
     public void StudentCanNotAccessCreateCourse()
     {
         // Arrange
-        authContext.SetRoles(Role.Student);
+        _authContext.SetRoles(Role.Student);
         
 	
         // Act
@@ -93,7 +93,7 @@ public class CreateAndEditCourseAuthorizationTests : TestContext
     public void AdminCanAccessEditCourse()
     {
         // Arrange
-        authContext.SetRoles(Role.Admin);
+        _authContext.SetRoles(Role.Admin);
         
 	
         // Act
@@ -110,7 +110,7 @@ public class CreateAndEditCourseAuthorizationTests : TestContext
     public void InstructorCanAccessEditCourse()
     {
         // Arrange
-        authContext.SetRoles(Role.Instructor);
+        _authContext.SetRoles(Role.Instructor);
         
 	
         // Act
@@ -127,7 +127,7 @@ public class CreateAndEditCourseAuthorizationTests : TestContext
     public void StudentCanNotAccessEditCourse()
     {
         // Arrange
-        authContext.SetRoles(Role.Student);;
+        _authContext.SetRoles(Role.Student);;
         
 	
         // Act
