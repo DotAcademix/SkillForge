@@ -40,7 +40,7 @@ else
                                    @onclick="async () => await OpenCourse(localId)">
                             View Course
                         </MudButton>
-                        <AuthorizeView Roles="@Role.Admin">
+                        <AuthorizeView Roles="@Role.Admin">  @*This button in the navigation menu appers on;y tho thosew users who have the role Admin*@
                             <MudButton Variant="Variant.Outlined"
                                        Color="Color.Warning"
                                        @onclick="async () => await EditCourse(localId)">
@@ -65,7 +65,7 @@ else
     CancellationToken cancellationToken;
     private List<SkillForge.Data.Entities.Course> courses;
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync() //When this page is open, the function gets all data from the database and places it inside the courses list
     {
         var coursesResult = await CourseService.GetAllAsync(cancellationToken);
         courses = coursesResult.ToList();
@@ -88,7 +88,7 @@ else
         try
         {
             await CourseService.DeleteAsync(courseId, cancellationToken);
-            courses = courses.Where(c => c.Id != courseId).ToList(); // Update UI
+            courses = courses.Where(c => c.Id != courseId).ToList(); 
         }
         catch (Exception ex)
         {

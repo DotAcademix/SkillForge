@@ -17,7 +17,7 @@
 
 @attribute [Authorize(Roles = $"{Role.Admin}")]
 
-<AuthorizeView Roles="@Role.Admin">
+<AuthorizeView Roles="@Role.Admin"> @*this page can only be accessed by users that are Admins*@
     <h3>Create a New Course</h3>
 
     <EditForm Model="Course" OnValidSubmit="CreateCourse" FormName="CourseForm">

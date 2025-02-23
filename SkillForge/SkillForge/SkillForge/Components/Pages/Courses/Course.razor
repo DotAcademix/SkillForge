@@ -98,7 +98,7 @@ else
 
         else
         {
-            if (userRole.Contains(Role.Admin) || userRole.Contains(Role.Instructor))
+            if (userRole.Contains(Role.Admin) || userRole.Contains(Role.Instructor))@*This button in the navigation menu appers on;y tho thosew users who have the role Admin and Instructor*@
             {
                 <MudGrid Spacing="6" Justify="Justify.Center">
                     <MudItem>
@@ -135,13 +135,13 @@ else
 
 @code {
     [Parameter] public string? courseId { get; set; }
-    private CourseViewModel? course; // This is your view model (SkillForge.Components.Pages.Course)
+    private CourseViewModel? course; 
     private bool isLoading = true;
     private List<string> userRole = [];
 
     private CancellationToken cancellationToken = new();
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync() //When you open this page, the method here checks if the user is authenticated and if there are courses
     {
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
@@ -179,7 +179,7 @@ else
         }
         finally
         {
-            isLoading = false;
+            isLoading = false; // finally here if there are courses the boolian IsLoading becames false and the modules are displayed
         }
     }
 

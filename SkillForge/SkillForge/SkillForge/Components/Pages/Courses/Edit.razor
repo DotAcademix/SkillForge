@@ -1,5 +1,6 @@
 ﻿@page "/course/{courseId}/edit"
 @using SkillForge.Core.Services.Abstraction
+@using SkillForge.Data.Enums
 @using SkillForge.Models.Courses
 @using AutoMapper
 @using SkillForge.Core.Prototypes
@@ -10,26 +11,27 @@
 @inject ICourseService courseService
 @inject NavigationManager NavManager
 @inject IMapper mapper
-
-<EditForm Model="@model" OnValidSubmit="UpdateCourse">
-    <DataAnnotationsValidator/>
-    <MudGrid>
-        <MudItem xs="12" sm="7">
-            <MudCard>
-                <MudCardContent>
-                    <MudTextField Label="Name" HelperText="Name"
-                                  @bind-Value="model.Name" For="@(() => model.Name)"/>
-                    <MudTextField Label="Description" Class="mt-3"
-                                  @bind-Value="model.Description" For="@(() => model.Description)"/>
-                </MudCardContent>
-                <MudCardActions>
-                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Save changes</MudButton>
-                </MudCardActions>
-            </MudCard>
-        </MudItem>
-    </MudGrid>
-</EditForm>
-
+<AuthorizeView Roles="@Role.Admin">
+    @*this page can only be accessed by users that are Admins*@
+    <EditForm Model="@model" OnValidSubmit="UpdateCourse">
+        <DataAnnotationsValidator />
+        <MudGrid>
+            <MudItem xs="12" sm="7">
+                <MudCard>
+                    <MudCardContent>
+                        <MudTextField Label="Name" HelperText="Name"
+                                      @bind-Value="model.Name" For="@(() => model.Name)" />
+                        <MudTextField Label="Description" Class="mt-3"
+                                      @bind-Value="model.Description" For="@(() => model.Description)" />
+                    </MudCardContent>
+                    <MudCardActions>
+                        <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Save changes</MudButton>
+                    </MudCardActions>
+                </MudCard>
+            </MudItem>
+        </MudGrid>
+    </EditForm>
+</AuthorizeView>
 
 @code {
     [Parameter] public string? courseId { get; set; }

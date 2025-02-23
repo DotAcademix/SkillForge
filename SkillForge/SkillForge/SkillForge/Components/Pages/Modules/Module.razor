@@ -28,6 +28,7 @@ else
         {
             <div class="mt-4">
                 <h4 class="font-semibold text-lg">Video:</h4>
+                @* shows the youtube video *@
                 <iframe width="100%" height="500px" 
                         src="@GetYouTubeEmbedUrl(module.VideoUrl)" 
                         frameborder="0" 
@@ -59,7 +60,7 @@ else
 
     private CancellationToken cancellationToken = new();
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync() // chesck if thee is a module with moduleId
     {
         if (string.IsNullOrEmpty(moduleId))
         {
@@ -85,27 +86,27 @@ else
         }
         finally
         {
-            isLoading = false;
+            isLoading = false; //the isLoading becoms false, when there is an existing module with moduleId, and the module's details are desplayed
         }
     }
 
-    private async Task GoBack()
+    private async Task GoBack() // returns back to the course page, that contains modules
     {
         NavManager.NavigateTo($"/course/{courseId}");
     }
 
-    private bool IsValidYouTubeUrl(string url)
+    private bool IsValidYouTubeUrl(string url) // chechs if the url link inside the module is a valid youtube url
     {
         return Uri.TryCreate(url, UriKind.Absolute, out Uri? uri) && uri.Host.Contains("youtube.com");
     }
 
-    private string GetYouTubeEmbedUrl(string url)
+    private string GetYouTubeEmbedUrl(string url) // gets the youtube video form the site
     {
         var videoId = ExtractYouTubeVideoId(url);
         return videoId != null ? $"https://www.youtube.com/embed/{videoId}" : string.Empty;
     }
 
-    private string? ExtractYouTubeVideoId(string url)
+    private string? ExtractYouTubeVideoId(string url) // displays the youtube video
     {
         var regex = new System.Text.RegularExpressions.Regex(@"(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]+)");
         var match = regex.Match(url);

@@ -79,6 +79,3 @@ public abstract class BaseService<TEntity, TPrototype>(IRepository<TEntity> repo
     protected virtual IEnumerable<Expression<Func<TEntity, bool>>> BuildAdditionalFilter() => [];
 }
 
-    // TODO: fix the id errors by adding base entity interface inside the .data project?
-    // add base entity class?
-    // error inside DeleteAsync
