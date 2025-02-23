@@ -36,15 +36,13 @@
     <h4 class="mt-6">Instructors</h4>
     @if (Instructors.Any())
     {
-        <ul>
             @foreach (var instructor in Instructors)
             {
-                <li>
-                    <strong>@instructor.UserName</strong>
-                    <p>@instructor.Email</p>
-                </li>
+                <MudStack>
+                    <MudPaper Class="pa-3"><strong>@instructor.FirstName @instructor.LastName</strong> <p>@instructor.Email</p></MudPaper>
+                </MudStack>
+                <br>
             }
-        </ul>
     }
     else
     {
@@ -63,6 +61,7 @@
     {
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
+        await LoadInstructors();
 
         if (user.Identity.IsAuthenticated)
         {
@@ -77,11 +76,12 @@
 
     private async Task LoadInstructors()
     {
-        var instructorRole = await RoleManager.FindByNameAsync(Role.Instructor);
+        var instructorRole = await RoleManager.FindByNameAsync("Instructor");
 
-
-        var usersInRole = await UserManager.GetUsersInRoleAsync(Role.Instructor);
-        Instructors = usersInRole.ToList();
-
+        if (instructorRole != null)
+        {
+            var usersInRole = await UserManager.GetUsersInRoleAsync("Instructor");
+            Instructors = usersInRole.ToList();
+        }
     }
 }
