@@ -1,4 +1,5 @@
 ﻿@page "/course/{courseId}/edit"
+@using Microsoft.AspNetCore.Authorization
 @using SkillForge.Core.Services.Abstraction
 @using SkillForge.Data.Enums
 @using SkillForge.Models.Courses
@@ -8,12 +9,13 @@
 
 @rendermode RenderMode.InteractiveServer
 
+@attribute [Authorize(Roles = $"{Role.Admin},{Role.Instructor}")]
 @inject ICourseService courseService
 @inject NavigationManager NavManager
 @inject IMapper mapper
-<AuthorizeView Roles="@Role.Admin">
-    @*this page can only be accessed by users that are Admins*@
-    <EditForm Model="@model" OnValidSubmit="UpdateCourse">
+
+
+    <EditForm Model="@model" OnValidSubmit="UpdateCourse" FormName="CourseForm">
         <DataAnnotationsValidator />
         <MudGrid>
             <MudItem xs="12" sm="7">
@@ -31,7 +33,6 @@
             </MudItem>
         </MudGrid>
     </EditForm>
-</AuthorizeView>
 
 @code {
     [Parameter] public string? courseId { get; set; }
