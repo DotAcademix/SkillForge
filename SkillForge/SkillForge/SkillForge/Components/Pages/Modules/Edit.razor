@@ -16,7 +16,7 @@
 
 @attribute [Authorize(Roles = $"{Role.Admin},{Role.Instructor}")]
 
-<AuthorizeView Roles="@Role.Admin">
+<AuthorizeView Roles="@Role.Admin,@Role.Instructor">
     <h3 class="text-2xl font-bold text-gray-800 mb-4 text-center">Edit Module</h3>
 
     @if (isLoading)

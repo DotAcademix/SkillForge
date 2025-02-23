@@ -18,7 +18,7 @@
 
 @attribute [Authorize(Roles = $"{Role.Admin},{Role.Instructor}")]
 
-<AuthorizeView Roles="@Role.Admin">
+<AuthorizeView Roles="@Role.Admin,@Role.Instructor">
     <h3>Create a New Module</h3>
 
     <EditForm Model="Module" OnValidSubmit="CreateModule" FormName="ModuleForm">
