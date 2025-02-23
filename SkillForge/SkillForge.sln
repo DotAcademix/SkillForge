@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkillForge.Data", "SkillFor
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkillForge.Core", "SkillForge.Core\SkillForge.Core.csproj", "{4912A477-31C8-4DD9-9138-7A43D8E9E282}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkillForge.Test", "SkillForge.Test\SkillForge.Test.csproj", "{C720CD31-D3E4-4189-8BC3-59AB8BC2674F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{4912A477-31C8-4DD9-9138-7A43D8E9E282}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4912A477-31C8-4DD9-9138-7A43D8E9E282}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4912A477-31C8-4DD9-9138-7A43D8E9E282}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C720CD31-D3E4-4189-8BC3-59AB8BC2674F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C720CD31-D3E4-4189-8BC3-59AB8BC2674F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C720CD31-D3E4-4189-8BC3-59AB8BC2674F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C720CD31-D3E4-4189-8BC3-59AB8BC2674F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -14,25 +14,30 @@
 @inject NavigationManager NavManager
 @inject IMapper mapper
 
-
+<AuthorizeView Roles="@(Role.Admin + "," + Role.Instructor)">
     <EditForm Model="@model" OnValidSubmit="UpdateCourse" FormName="CourseForm">
-        <DataAnnotationsValidator />
-        <MudGrid>
-            <MudItem xs="12" sm="7">
-                <MudCard>
-                    <MudCardContent>
-                        <MudTextField Label="Name" HelperText="Name"
-                                      @bind-Value="model.Name" For="@(() => model.Name)" />
-                        <MudTextField Label="Description" Class="mt-3"
-                                      @bind-Value="model.Description" For="@(() => model.Description)" />
-                    </MudCardContent>
-                    <MudCardActions>
-                        <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Save changes</MudButton>
-                    </MudCardActions>
-                </MudCard>
-            </MudItem>
-        </MudGrid>
+        <ChildContent Context="courseContext">
+            <DataAnnotationsValidator/>
+            <MudGrid>
+                <MudItem xs="12" sm="7">
+                    <MudCard>
+                        <MudCardContent>
+                            <MudTextField Label="Name" HelperText="Name"
+                                          @bind-Value="model.Name" For="@(() => model.Name)"/>
+                            <MudTextField Label="Description" Class="mt-3"
+                                          @bind-Value="model.Description" For="@(() => model.Description)"/>
+                        </MudCardContent>
+                        <MudCardActions>
+                            <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary"
+                                       Class="ml-auto">Save changes
+                            </MudButton>
+                        </MudCardActions>
+                    </MudCard>
+                </MudItem>
+            </MudGrid>
+        </ChildContent>
     </EditForm>
+</AuthorizeView>
 
 @code {
     [Parameter] public string? courseId { get; set; }

@@ -16,58 +16,61 @@
 
 @attribute [Authorize(Roles = $"{Role.Admin},{Role.Instructor}")]
 
-<h3 class="text-2xl font-bold text-gray-800 mb-4 text-center">Edit Module</h3>
 
-@if (isLoading)
-{
-    <p class="text-center text-gray-500">Loading module details...</p>
-}
-else if (Module == null)
-{
-    <p class="text-center text-red-500">Module not found.</p>
-}
-else
-{
-    <EditForm Model="Module" OnValidSubmit="UpdateModule" FormName="ModuleForm2">
-        <ChildContent Context="courseContext">
-            <DataAnnotationsValidator/>
-            <ValidationSummary/>
+<AuthorizeView Roles="@(Role.Admin + "," + Role.Instructor)">
+    <h3 class="text-2xl font-bold text-gray-800 mb-4 text-center">Edit Module</h3>
 
-            <div>
-                <label>Name:</label>
-                <InputText @bind-Value="Module.Name" class="form-control"/>
-                <ValidationMessage For="@(() => Module.Name)"/>
-            </div>
+    @if (isLoading)
+    {
+        <p class="text-center text-gray-500">Loading module details...</p>
+    }
+    else if (Module == null)
+    {
+        <p class="text-center text-red-500">Module not found.</p>
+    }
+    else
+    {
+        <EditForm Model="Module" OnValidSubmit="UpdateModule" FormName="ModuleForm2">
+            <ChildContent Context="courseContext">
+                <DataAnnotationsValidator/>
+                <ValidationSummary/>
 
-            <div>
-                <label>Content:</label>
-                <InputTextArea @bind-Value="Module.Content" class="form-control"/>
-                <ValidationMessage For="@(() => Module.Content)"/>
-            </div>
-
-            <div>
-                <label>Video URL:</label>
-                <InputTextArea @bind-Value="Module.VideoUrl" class="form-control"/>
-                <ValidationMessage For="@(() => Module.VideoUrl)"/>
-            </div>
-
-            <!-- Video Thumbnail Preview -->
-            @if (!string.IsNullOrEmpty(Module.VideoUrl) && IsValidYouTubeUrl(Module.VideoUrl))
-            {
-                var thumbnailUrl = GetYouTubeThumbnailUrl(Module.VideoUrl);
-                <div class="mt-3">
-                    <h5>Video Preview:</h5>
-                    <img src="@thumbnailUrl" alt="Video Thumbnail" class="w-32 h-32 object-cover rounded-md"/>
+                <div>
+                    <label>Name:</label>
+                    <InputText @bind-Value="Module.Name" class="form-control"/>
+                    <ValidationMessage For="@(() => Module.Name)"/>
                 </div>
-            }
 
-            <div class="mt-4">
-                <button type="submit" class="btn btn-primary">Update Module</button>
-                <button type="button" class="btn btn-secondary ml-2" @onclick="CancelEdit">Cancel</button>
-            </div>
-        </ChildContent>
-    </EditForm>
-}
+                <div>
+                    <label>Content:</label>
+                    <InputTextArea @bind-Value="Module.Content" class="form-control"/>
+                    <ValidationMessage For="@(() => Module.Content)"/>
+                </div>
+
+                <div>
+                    <label>Video URL:</label>
+                    <InputTextArea @bind-Value="Module.VideoUrl" class="form-control"/>
+                    <ValidationMessage For="@(() => Module.VideoUrl)"/>
+                </div>
+
+                <!-- Video Thumbnail Preview -->
+                @if (!string.IsNullOrEmpty(Module.VideoUrl) && IsValidYouTubeUrl(Module.VideoUrl))
+                {
+                    var thumbnailUrl = GetYouTubeThumbnailUrl(Module.VideoUrl);
+                    <div class="mt-3">
+                        <h5>Video Preview:</h5>
+                        <img src="@thumbnailUrl" alt="Video Thumbnail" class="w-32 h-32 object-cover rounded-md"/>
+                    </div>
+                }
+
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-primary">Update Module</button>
+                    <button type="button" class="btn btn-secondary ml-2" @onclick="CancelEdit">Cancel</button>
+                </div>
+            </ChildContent>
+        </EditForm>
+    }
+</AuthorizeView>
 
 @code {
     [Parameter] public string? moduleId { get; set; }
