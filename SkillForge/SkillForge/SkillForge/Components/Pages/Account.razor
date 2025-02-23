@@ -1,8 +1,16 @@
 ﻿@page "/Account"
+@rendermode RenderMode.InteractiveServer
+
+@using Microsoft.AspNetCore.Identity
+@using SkillForge.Data
+@using SkillForge.Data.Entities
+@using System.Security.Claims
+@inject NavigationManager Navigation
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject UserManager<ApplicationUser> UserManager
 
 <PageTitle>Account</PageTitle>
 
-@inject NavigationManager Navigation
 <style>
     main {
         grid-area: main;
@@ -19,7 +27,7 @@
     }
 
     .section .menu1 {
-        width: 210pxpx;
+        width: 210px;
         justify-content: flex-end;
         background: #fefefe;
         border-right: 2px solid;
@@ -27,11 +35,7 @@
 
     .section .container .menu2 {
         padding: min(3em, 4%);
-    } 
-
-        /* .section .container .menu2 .p {
-            margin-bottom: 1em;
-        } */
+    }
 
     .prf-link {
         background: transparent;
@@ -53,7 +57,9 @@
         .prf-link::after {
             border: none;
         }
+
 </style>
+
 <main>
     <h2>My Profile</h2>
     <div class="row">
@@ -65,23 +71,51 @@
                 <NavLink class="prf-link" href="Account/MyCourses">
                     <span class="bi bi-house-door-fill" aria-hidden="true"></span> My Courses
                 </NavLink>
+                <NavLink class="nav-link" href="Account/Manage/TwoFactorAuthentication">
+                    <span class="bi bi-house-door-fill" aria-hidden="true"></span> Two-factor authentication
+                </NavLink>
             </section>
         </div>
 
         <div class="col-lg-6">
             <section class="menu2">
                 <h3>Account Details</h3>
-                @SelectedContent
+                @if (CurrentUser != null)
+                {
+                    <p><strong>First Name:</strong> @CurrentUser.FirstName</p>
+                    <p><strong>Last Name:</strong> @CurrentUser.LastName</p>
+                    <p><strong>Email:</strong> @CurrentUser.Email</p>
+                    <p><strong>Role:</strong> @(UserRoles.Any() ? string.Join(", ", UserRoles) : "No Role Assigned")</p>
+                }
+                else
+                {
+                    <p>Loading user details...</p>
+                }
             </section>
         </div>
     </div>
 </main>
 
 @code {
-    private RenderFragment SelectedContent => builder =>
+    private ApplicationUser? CurrentUser;
+    private List<string> UserRoles = new();
+
+    protected override async Task OnInitializedAsync()
     {
-        builder.OpenElement(0, "p");
-        builder.AddContent(1, "This is placeholder text.");
-        builder.CloseElement();
-    };
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity.IsAuthenticated)
+        {
+            string? userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!string.IsNullOrEmpty(userId))
+            {
+                CurrentUser = await UserManager.FindByIdAsync(userId);
+                if (CurrentUser != null)
+                {
+                    UserRoles = (await UserManager.GetRolesAsync(CurrentUser)).ToList();
+                }
+            }
+        }
+    }
 }
