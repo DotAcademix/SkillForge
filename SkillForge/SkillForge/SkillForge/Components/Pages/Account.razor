@@ -11,56 +11,54 @@
 
 <PageTitle>Account</PageTitle>
 
-    <style>
-        main {
-            grid-area: main;
+<style>
+    main {
+        grid-area: main;
+    }
+
+    h3 {
+        border-bottom: 2px solid;
+        margin-bottom: 1em;
+    }
+
+    h1 {
+        border-bottom: 2px solid;
+        margin-bottom: 2rem;
+    }
+
+    .section .menu1 {
+        width: 210px;
+        justify-content: flex-end;
+        background: #fefefe;
+        border-right: 2px solid;
+    }
+
+    .section .container .menu2 {
+        padding: min(3em, 4%);
+    }
+
+    .prf-link {
+        background: transparent;
+        border: none;
+        color: black;
+        padding: 8px 15px;
+        text-decoration: none;
+        transition: background 0.3s ease, color 0.3s ease;
+        width: 100%;
+    }
+
+        .prf-link:hover,
+        .prf-link:focus {
+            background: linear-gradient(to right, #3da4dc, var(--mainColor));
+            color: white;
+            border-radius: 0.5rem;
         }
 
-        h3 {
-            border-bottom: 2px solid;
-            margin-bottom: 1em;
-        }
-
-        h1 {
-            border-bottom: 2px solid;
-            margin-bottom: 2rem;
-        }
-
-        .section .menu1 {
-            width: 210px;
-            justify-content: flex-end;
-            background: #fefefe;
-            border-right: 2px solid;
-        }
-
-        .section .container .menu2 {
-
-            padding: min(3em, 4%);
-        }
-
-        .prf-link {
-            background: transparent;
+        .prf-link::after {
             border: none;
-            color: black;
-            padding: 8px 15px;
-            text-decoration: none;
-            transition: background 0.3s ease, color 0.3s ease;
-            width: 100%;
         }
 
-            .prf-link:hover,
-            .prf-link:focus {
-                background: linear-gradient(to right, #3da4dc, var(--mainColor));
-                color: white;
-                border-radius: 0.5rem;
-            }
-
-            .prf-link::after {
-                border: none;
-            }
-
-    
-    </style>
+</style>
 
 <main>
     <h2>My Profile</h2>
@@ -72,6 +70,9 @@
                 </NavLink>
                 <NavLink class="prf-link" href="Account/MyCourses">
                     <span class="bi bi-house-door-fill" aria-hidden="true"></span> My Courses
+                </NavLink>
+                <NavLink class="nav-link" href="Account/Manage/TwoFactorAuthentication">
+                    <span class="bi bi-house-door-fill" aria-hidden="true"></span> Two-factor authentication
                 </NavLink>
             </section>
         </div>
